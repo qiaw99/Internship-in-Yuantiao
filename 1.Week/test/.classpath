@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="test/test-api/src/main/java"/>
+	<classpathentry kind="src" path="test/test-impl/src/main/java"/>
+	<classpathentry kind="src" path="test/test-web/src/main/java"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="test/test-api/target/classes"/>
+</classpath>

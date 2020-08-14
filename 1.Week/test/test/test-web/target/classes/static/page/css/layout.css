@@ -1,0 +1,33 @@
+
+.mini-menu-horizontal .mini-menuitem {
+    padding: 0 10px!important;
+}
+
+.mini-panel-body{
+	padding:0px!important;
+	border:none!important
+}
+
+#content{
+	height:100%;
+}
+.left-area{
+	box-sizing:border-box;
+	width:340px;
+	height:100%;
+	position:absolute;
+	z-index:2000;
+	top:0;
+	left:0;
+	background:#fff;
+}
+
+.left-area .mini-tabs-plain{
+	border:none !important;
+}
+
+.main-area{
+	height:100%;
+	margin-left:280px;
+	position:relative;
+}

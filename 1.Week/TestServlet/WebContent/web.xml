@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+	<filter>
+		<filter-name>SiteHitCounter</filter-name>
+		<filter-class>SiteHitCounter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>SiteHitCounter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>ErrorHandler</servlet-name>
+		<servlet-class>myFirstServlet.ErrorHandler</servlet-class>
+	</servlet>
+	<!-- servlet mappings -->
+	<servlet-mapping>
+		<servlet-name>ErrorHandler</servlet-name>
+		<url-pattern>/TestServlet/ErrorHandler</url-pattern>
+	</servlet-mapping>
+
+	<!-- error-code 相关的错误页面 -->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/ErrorHandler</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/ErrorHandler</location>
+	</error-page>
+
+	<!-- exception-type 相关的错误页面 -->
+	<error-page>
+		<exception-type>
+			javax.servlet.ServletException
+		</exception-type>
+		<location>/ErrorHandler</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>java.io.IOException</exception-type>
+		<location>/ErrorHandler</location>
+	</error-page>
+
+	<!-- 通用异常配置 -->
+	<!-- <error-page> <exception-type>java.lang.Throwable</exception-type> <location>/ErrorHandler</location> 
+		</error-page> -->
+</web-app>  
