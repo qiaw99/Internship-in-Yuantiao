@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<Employee>
+    <id>125</id>
+    <first>Max</first>
+    <last>Su</last>
+    <Salary>18000</Salary>
+    <Dob>18-08-1978</Dob>
+</Employee>
+
+<Employee>
+    <id>126</id>
+    <first>Min</first>
+    <last>Max</last>
+    <Salary>29000</Salary>
+    <Dob>12-05-1989</Dob>
+</Employee>
