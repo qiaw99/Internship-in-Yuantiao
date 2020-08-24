@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yuantiao.barrett.bus.changshaDao.IAlarmInfoDao" >
+
+	<resultMap id="operationInfoBo" type="com.yuantiao.barrett.bus.bo.OperationInfoBo">
+		<result column="ID" property="id" />
+		<result column="CALL_TIME" property="callTime" />
+		<result column="DEPARTMENT" property="department" />
+		<result column="LOCATION" property="location" />
+		<result column="CALL_TYPE" property="callType" />
+	</resultMap>
+	
+	<resultMap id="alarmInfoBo" type="com.yuantiao.barrett.bus.bo.AlarmInfoBo">
+		<result column="ID" property="id" />
+		<result column="CALL_TIME" property="callTime" />
+		<result column="DEPARTMENT" property="department" />
+		<result column="LOCATION" property="location" />
+		<result column="CALL_TYPE" property="callType" />
+	</resultMap>
+	
+	<!-- <select id="selectAllDefault" resultMap="alarmInfoBo">
+		SELECT
+			date_format(
+				DATATIME, 
+				'%Y-%m-%d %H:%i'
+			) as CALL_TIME,
+			infoa.AREA_NAME as DEPARTMENT,
+			ar.`NAME` as LOCATION,
+			ar.ALARM_TYPE
+		FROM
+			alarm_result AS ar,
+			info_r2a AS info,
+			info_area AS infoa 
+		WHERE	
+			ar.ID = info.roadid 
+			AND ar.NAME LIKE concat('%',#{userName},'%')
+			AND info.areaid = infoa.ID 
+			AND ( AREA_NAME = "雨花区" OR 
+				AREA_NAME = "芙蓉区" OR 
+				AREA_NAME = "天心区" OR 
+				AREA_NAME = "岳麓区" OR 
+				AREA_NAME = "开福区" OR 
+				AREA_NAME = "高新区") 
+	</select> -->
+	
+	
+	<select id="selectAll" resultMap="alarmInfoBo">
+		<choose>
+			<!-- <when test=" userName != null and userName != '' and callType != 'allCall' and teamType != 'all' 
+						and startTime != null and endTime != null and startTime != '' and endTime != '' "> -->
+			<when test=" startTime != null and endTime != null and startTime != '' and endTime != '' ">  
+				SELECT
+					date_format(
+						DATATIME, 
+						'%Y-%m-%d %H:%i'
+					) as CALL_TIME,
+					infoa.AREA_NAME as DEPARTMENT,
+					ar.`NAME` as LOCATION,
+					ar.ALARM_TYPE as CALL_TYPE
+				FROM
+					alarm_result AS ar,
+					info_r2a AS info,
+					info_area AS infoa 
+				<where>
+					ar.ID = info.roadid 
+					AND info.areaid = infoa.ID 
+					AND ( AREA_NAME = "雨花区" OR 
+						AREA_NAME = "芙蓉区" OR 
+						AREA_NAME = "天心区" OR 
+						AREA_NAME = "岳麓区" OR 
+						AREA_NAME = "开福区" OR 
+						AREA_NAME = "高新区")
+						AND ar.NAME like concat('%',#{userName},'%') 
+					<!-- <if test=" userName!=null and userName!='' ">
+						and ar.NAME like concat('%',#{userName},'%') 
+					</if> -->
+					<if test=" startTime!=null and startTime!='' ">
+						and DATATIME &gt;= #{startTime}
+					</if>
+					<if test=" endTime!=null and endTime!='' ">
+						and DATATIME &lt;= #{endTime}
+					</if>
+					<if test=" callType!=null and callType!='' ">
+						and ALARM_TYPE = #{callType}
+					</if>
+					<if test=" teamType!=null and teamType!='' ">
+						and AREA_NAME = #{teamType}
+					</if>
+				</where>
+			</when>
+			<otherwise>
+				SELECT
+					ar.DATATIME as CALL_TIME,
+					infoa.AREA_NAME as DEPARTMENT,
+					ar.`NAME` as LOCATION,
+					ar.ALARM_TYPE as CALL_TYPE
+				FROM
+					alarm_result AS ar,
+					info_r2a AS info,
+					info_area AS infoa 
+				WHERE	
+					ar.ID = info.roadid 
+					AND info.areaid = infoa.ID 
+					AND ( AREA_NAME = "雨花区" OR 
+						AREA_NAME = "芙蓉区" OR 
+						AREA_NAME = "天心区" OR 
+						AREA_NAME = "岳麓区" OR 
+						AREA_NAME = "开福区" OR 
+						AREA_NAME = "高新区")
+					AND ar.NAME like concat('%',#{userName},'%') 
+					<!-- <if test="userName != null">
+						and ar.NAME LIKE concat('%',#{userName},'%')
+					</if>	 -->
+					<if test=" startTime!=null and startTime!='' ">
+						and DATATIME &gt;= #{startTime}
+					</if>
+					<if test=" endTime!=null and endTime!='' ">
+						and DATATIME &lt;= #{endTime}
+					</if>
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<sql id="select">
+		SELECT
+			ID,
+			USER_NAME,
+			date_format(
+				START_TIME,
+				'%Y-%m-%d %H:%i'
+			) AS START_TIME,
+			date_format(
+				END_TIME,
+				'%Y-%m-%d %H:%i'
+			) AS END_TIME,
+			LOGIN_TIME,
+			DEPARTMENT_NAME,
+			LOGIN_IP
+		FROM
+			user_operation_record
+	</sql>
+	
+	<sql id="selectCount">
+		SELECT
+			count(*)
+		FROM
+			user_operation_record
+	</sql>
+	
+	<sql id="selectWhere">
+		<where>
+			<if test=" userName!=null and userName!='' ">
+				and USER_NAME  like concat('%',#{userName},'%') 
+			</if>
+			<if test=" startTime!=null and startTime!='' ">
+				and START_TIME &gt;= #{startTime} and START_TIME &lt;= #{startTimeLastSecond}
+			</if>
+			<if test=" endTime!=null and endTime!='' ">
+				and END_TIME &gt;= #{endTime} and END_TIME &lt;= #{endTimeLastSecond}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="query" resultMap="operationInfoBo" >
+		<include refid="select"/> 
+		<include refid="selectWhere"></include>
+			 order by USER_NAME
+			 limit #{pageBegin},#{pageEnd}
+	</select>
+	
+	<select id="queryCount" resultType="int"
+		parameterType="com.yuantiao.barrett.bus.condition.OperationInfoQueryCondition">
+		SELECT
+			count(*)
+		FROM
+			alarm_result AS ar,
+			info_r2a AS info,
+			info_area AS infoa 
+		WHERE	
+			ar.ID = info.roadid 
+			AND info.areaid = infoa.ID 
+	</select>
+	
+	<insert id="insert" parameterType="com.yuantiao.barrett.bus.bo.OperationInfoBo">
+		insert into 
+			user_operation_record (USER_NAME, START_TIME, END_TIME, DEPARTMENT_NAME, LOGIN_TIME, LOGIN_IP)
+		VALUES
+			(#{userName}, STR_TO_DATE(#{startTime}, '%Y-%m-%d %H:%i:%s'), 
+			STR_TO_DATE(#{endTime}, '%Y-%m-%d %H:%i:%s'), #{belongDep}, #{loginTime}, #{loginIp})
+	</insert>
+	
+	<select id="findOperationInfo" resultMap="operationInfoBo" >
+		SELECT
+			ID,
+			USER_NAME,
+			date_format(START_TIME, '%Y-%m-%d %H:%i:%s') AS START_TIME,
+			date_format(END_TIME, '%Y-%m-%d %H:%i:%s') AS END_TIME,
+			LOGIN_TIME,
+			DEPARTMENT_NAME,
+			LOGIN_IP
+		FROM
+			user_operation_record 
+		WHERE END_TIME is null
+		<if test=" userName!=null and userName!='' ">
+			and USER_NAME = #{userName} 
+		</if>
+		<if test=" startTime!=null and startTime!='' ">
+			and START_TIME = #{startTime} 
+		</if>
+	</select>
+	
+	<update id="updateUserOperation" parameterType="com.yuantiao.barrett.bus.bo.OperationInfoBo">
+		UPDATE user_operation_record
+		<set>
+			<if test="endTime != null and endTime != ''">END_TIME = STR_TO_DATE(#{endTime}, '%Y-%m-%d %H:%i:%s'),</if>
+			<if test="loginTime != null and loginTime != ''">LOGIN_TIME = #{loginTime},</if>
+		</set>
+		WHERE END_TIME is null
+		<if test=" id!=null and id!='' ">
+			and ID = #{id} 
+		</if>
+		<if test=" userName!=null and userName!='' ">
+			and USER_NAME = #{userName} 
+		</if>
+		<if test=" startTime!=null and startTime!='' ">
+			and START_TIME = #{startTime} 
+		</if>
+	</update>
+	
+	<select id="findAllUntreatedRecords" resultMap="operationInfoBo" >
+		SELECT
+			ID,
+			USER_NAME,
+			date_format(START_TIME, '%Y-%m-%d %H:%i:%s') AS START_TIME,
+			date_format(END_TIME, '%Y-%m-%d %H:%i:%s') AS END_TIME,
+			LOGIN_TIME,
+			DEPARTMENT_NAME,
+			LOGIN_IP
+		FROM
+			user_operation_record
+		WHERE END_TIME is null
+		<if test=" userName!=null and userName!='' ">
+			and USER_NAME = #{userName} 
+		</if>
+		<if test=" startTime!=null and startTime!='' ">
+			and START_TIME = #{startTime} 
+		</if>
+	</select>
+	
+	
+</mapper>
