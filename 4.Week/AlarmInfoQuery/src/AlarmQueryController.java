@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yuantiao.barrett.api.util.ExcelUtil;
+import com.yuantiao.barrett.bus.bo.AlarmDeviceInfoBo;
 import com.yuantiao.barrett.bus.bo.AlarmInfoBo;
+import com.yuantiao.barrett.bus.bo.AlarmMicMonitorBo;
+import com.yuantiao.barrett.bus.camoservice.AlarmDeviceInfoService;
 import com.yuantiao.barrett.bus.condition.AlarmInfoQueryCondition;
 import com.yuantiao.barrett.bus.service.AlarmInfoService;
-import com.yuantiao.barrett.bus.vo.DevDetailVo;
 import com.yuantiao.webplatform.core.annotation.QueryRequestParam;
 import com.yuantiao.webplatform.core.object.GridQueryResult;
 import com.yuantiao.webplatform.core.object.QueryController;
@@ -75,6 +77,9 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 	@Autowired
 	private AlarmInfoService<AlarmInfoQueryCondition> alarmInfoService;
 	
+	@Autowired
+	private AlarmDeviceInfoService<AlarmInfoQueryCondition> alarmDeviceInfoService;	
+	
 	@RequestMapping(value = "/alarmRecord.html")
 	public String alarmRecord(Model m){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -84,13 +89,6 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 		
 		return "alarmInfo/alarmRecord";
 	}
-	
-//	@RequestMapping(value = "/devDetail.html")
-//	public String devDetail(Model m){
-//		
-//		m.addAttribute("list",list);
-//		return "alarmInfo/";
-//	}
 	
 	@RequestMapping("/query")
 	public @ResponseBody GridQueryResult query(@QueryRequestParam("params") RequestCondition params, Model m) {
@@ -104,14 +102,77 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 		queryCondition.setCallType(callTypeMap.get(map.get("callType")));
 		queryCondition.setTeamType(teamTypeMap.get(map.get("teamType")));
 		
+		List<AlarmDeviceInfoBo> devices = null;
+		
 		List<AlarmInfoBo> list = null;
 		
+		List<AlarmMicMonitorBo> micMonitors = null;
+		
 		// Get all results 
-		if(queryCondition.getCallType() != "5"){
+		if(queryCondition.getCallType() == "5"){
+			// check all bays
+			devices = alarmDeviceInfoService.selectAllBays(queryCondition);
+			
+			// check all mic monitors
+			micMonitors = alarmDeviceInfoService.selectAllMics(queryCondition);
+			
+			// clear the call type with null or ""? loschen
+//			queryCondition.setCallType(null);
+			
 			list = alarmInfoService.selectAll(queryCondition);
-		} else{
-			System.out.println(" ");
+			
+			int size = list.size();
+			
+			// Complexity? O(lgn*n^3) 
+			for(AlarmInfoBo tempAlarmInfoBo: list){
+				if((tempAlarmInfoBo.getCallType()).compareTo("5") != 0){
+					list.remove(tempAlarmInfoBo);
+					continue;
+				}
+				
+				for(AlarmDeviceInfoBo tempAlarmDeviceInfoBo: devices){
+					
+					// Check the location and the road name
+					if((tempAlarmInfoBo.getLocation()).compareTo(tempAlarmDeviceInfoBo.getRoadName()) == 0){
+
+						// Check the status of the chosen device
+						if((tempAlarmDeviceInfoBo.getResult()).compareTo("Normal") == 0 || 
+								(tempAlarmDeviceInfoBo.getResult()).compareTo("NODATE") == 0){
+						
+							// remove all normal bays 
+							list.remove(tempAlarmInfoBo);
+						}
+					}
+				}
+			}
+			
+			// remove all normal mic monitors
+			for(AlarmInfoBo tempAlarmInfoBo: list){
+				if((tempAlarmInfoBo.getCallType()).compareTo("5") != 0){
+					list.remove(tempAlarmInfoBo);
+					continue;
+				}
+				
+				for(AlarmMicMonitorBo tempMicMonitor: micMonitors){
+					if((tempAlarmInfoBo.getLocation()).compareTo(tempMicMonitor.getRoadName()) == 0){
+						if((tempMicMonitor.getResult()).compareTo("Normal") == 0 || 
+								(tempMicMonitor.getResult()).compareTo("NODATE") == 0){
+							list.remove(tempAlarmInfoBo);
+						}
+					}
+				}
+			}
+			
+			int changedSize = list.size();
+			
+			if(size == changedSize){
+				queryCondition.setCallType("5");
+			}
+			
+		} else {
+			list = alarmInfoService.selectAll(queryCondition);
 		}
+
 		
 		// Show all corresponded records
 		if(list != null){
@@ -128,9 +189,10 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 						tempBo.setCallType(callTypeMap.get(tempBo.getCallType()));
 					}
 				}
-				System.out.println(tempBo);
+				logger.info(tempBo.toString());
 			}
 		}
+		
 		int count = alarmInfoService.queryCount(queryCondition);
 		GridQueryResult g = new GridQueryResult(count, list);
 		
@@ -139,15 +201,6 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 	
 	@RequestMapping(value = "/excelExport", method = RequestMethod.POST)
 	public @ResponseBody void exportExcel(HttpServletRequest request, HttpServletResponse response) {
-//		String path = EXCEL + File.separator + System.currentTimeMillis() + EXCELEND;
-//		String baseSavePath = request.getSession().getServletContext().getRealPath("/") + "../";
-//		String realPath = baseSavePath + path;
-//		List<AlarmInfoBo> list = alarmInfoService.selectAll(new AlarmInfoQueryCondition());
-//		String[] headerNames = new String[] { "所属道路名称" };
-//		String[] fieldNames = new String[] {"序号",  "报警时间", "所属部门", "地点", "报警类型"};
-//		String itemName = "报警";
-//		ExcelUtil.generateExcel(realPath, headerNames, fieldNames, list, itemName);
-//		ExcelUtil.downLoadExcel(realPath, response);
 		
 		logger.info("In Export Excel: " + request.getPathInfo());
 		

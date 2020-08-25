@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yuantiao.barrett.bus.camodao.AlarmDeviceInfoDao" >
+	
+	<resultMap id="alarmDeviceInfoBo" type="com.yuantiao.barrett.bus.bo.AlarmDeviceInfoBo">
+		<result column="RESULT" property="result" />
+		<result column="ROAD_NAME" property="roadName" />
+	</resultMap>
+	
+	<resultMap id="alarmMicMonitorBo" type="com.yuantiao.barrett.bus.bo.AlarmMicMonitorBo">
+		<result column="RESULT" property="result" />
+		<result column="ROAD_NAME" property="roadName" />
+	</resultMap>
+	
+	<select id="selectAllBays" resultMap="alarmDeviceInfoBo">
+		SELECT DISTINCT ir.ROAD_NAME, dbm.RESULT
+		FROM device_bay_monitor AS dbm, info_bay as ib, info_road as ir
+		<where>
+			ROAD_NAME like concat('%',#{userName},'%') 
+			<if test="startTime != '' and startTime != null">
+				AND dbm.BEGIN_TIME &gt;= #{startTime}
+				AND dbm.BEGIN_TIME &lt;= #{endTime}
+			</if>
+			AND dbm.DEVICE_CODE = ib.DEVICE_CODE
+			AND ib.ROAD_CODE = ir.ROAD_CODE
+		</where> 
+	</select>
+	
+	<select id="selectAllMics" resultMap="alarmMicMonitorBo">	
+		SELECT DISTINCT ir.ROAD_NAME, dmm.RESULT
+		FROM device_mic_monitor AS dmm, info_mic as im, info_road as ir
+		<where>
+			ROAD_NAME like concat('%',#{userName},'%') 
+			<if test="startTime != '' and startTime != null">
+				AND dmm.BEGIN_TIME &gt;= #{startTime}
+				AND dmm.BEGIN_TIME &lt;= #{endTime}
+			</if>
+			AND dmm.DEVICE_CODE = im.DEVICE_CODE
+			AND im.ROAD_CODE = ir.ROAD_CODE
+		</where> 
+	</select>
+	
+</mapper>
