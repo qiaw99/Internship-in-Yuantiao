@@ -28,65 +28,12 @@ public class AlarmInfoServiceImpl implements AlarmInfoService<AlarmInfoQueryCond
 
 	@Override
 	public int queryCount(AlarmInfoQueryCondition queryCondition) {
+		logger.info("" + alarmInfoDao.queryCount(queryCondition));
 		return alarmInfoDao.queryCount(queryCondition);
-	}
-
-	@Override
-	public void insert(AlarmInfoBo alarmInfoBo) {
-		
-	}
-
-	@Override
-	public List<AlarmInfoBo> findOperationInfo(AlarmInfoQueryCondition queryCondition) {
-		return null;
-	}
-
-	@Override
-	public void updateUserOperation(AlarmInfoBo updateBo) {		
-		
-	}
-
-	@Override
-	public List<AlarmInfoBo> findAllUntreatedRecords(AlarmInfoQueryCondition queryCondition) {
-		return null;
 	}
 
 	@Override
 	public List<AlarmInfoBo> selectAll(AlarmInfoQueryCondition queryCondition) {
 		return alarmInfoDao.selectAll(queryCondition);
 	}
-	
-	@Override
-	public void unifiedPrepareHandleUserOperationRecord(String username, String currentDateTime, 
-			AlarmInfoQueryCondition queryCondition) {
-		List<AlarmInfoBo> allUntreatedRecords = findAllUntreatedRecords(queryCondition);
-		
-    	if (allUntreatedRecords != null) {
-    		for(AlarmInfoBo untreatedRecord : allUntreatedRecords){
-				//String loginTime = DateUtil.minusDate(untreatedRecord.getStartTime(), currentDateTime);
-				AlarmInfoBo updateBo = new AlarmInfoBo();
-				updateBo.setId(untreatedRecord.getId());
-				
-				//获得当前时间
-				updateBo.setCallTime(currentDateTime);
-				
-				SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-				updateBo.setCallTime(dFormat.format(new Date()));
-				
-				
-				updateBo.setCallType(untreatedRecord.getCallType());
-				updateBo.setDepartment(untreatedRecord.getDepartment());
-				updateBo.setLocation(untreatedRecord.getLocation());
-				
-//					if (!StringUtils.isEmpty(username)) 
-//						updateBo.setUserName(username);
-//					updateBo.setStartTime(untreatedRecord.getStartTime());
-//					updateBo.setEndTime(currentDateTime);
-//					updateBo.setLoginTime(loginTime);
-				// 更新
-				updateUserOperation(updateBo);
-        	}
-    	} 
-	}
-
 }

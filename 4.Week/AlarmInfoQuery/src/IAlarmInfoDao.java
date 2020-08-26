@@ -11,12 +11,4 @@ public interface IAlarmInfoDao {
 	public List<AlarmInfoBo> query(AlarmInfoQueryCondition queryCondition);
 
 	public int queryCount(AlarmInfoQueryCondition queryCondition);
-	
-	void insert(AlarmInfoBo operationInfoBo);
-	
-	List<AlarmInfoBo> findOperationInfo(AlarmInfoQueryCondition queryCondition);
-	
-	void updateUserOperation(AlarmInfoBo operationInfoBo);
-	
-	//List<AlarmInfoBo> findAllUntreatedRecords(AlarmInfoQueryCondition queryCondition);
 }

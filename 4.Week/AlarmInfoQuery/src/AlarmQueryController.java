@@ -2,6 +2,7 @@ package com.yuantiao.barrett.bus.controller;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +81,10 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 	@Autowired
 	private AlarmDeviceInfoService<AlarmInfoQueryCondition> alarmDeviceInfoService;	
 	
+	private List<AlarmInfoBo> list = null;
+	
+	private List<AlarmInfoBo> allRecords = null;
+	
 	@RequestMapping(value = "/alarmRecord.html")
 	public String alarmRecord(Model m){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -94,17 +99,28 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 	public @ResponseBody GridQueryResult query(@QueryRequestParam("params") RequestCondition params, Model m) {
 		AlarmInfoQueryCondition queryCondition = this.rCondition2QCondition(params);
 		
-		// Get all attributes contained in queryCondition
+		int page = Integer.parseInt(params.getPageIndex());
+		int rows = Integer.parseInt(params.getPageSize());
+		int begin = page * rows ;
 		Map<String, String> map = formFilterToMap(params);
-		queryCondition.setUserName(map.get("userName"));
-		queryCondition.setStartTime(map.get("startTime"));
-		queryCondition.setEndTime(map.get("endTime"));
-		queryCondition.setCallType(callTypeMap.get(map.get("callType")));
-		queryCondition.setTeamType(teamTypeMap.get(map.get("teamType")));
+		
+		// Get all attributes contained in queryCondition
+		try {
+			queryCondition.setUserName(map.get("userName"));
+			queryCondition.setStartTime(map.get("startTime"));
+			queryCondition.setEndTime(map.get("endTime"));
+			queryCondition.setCallType(callTypeMap.get(map.get("callType")));
+			queryCondition.setTeamType(teamTypeMap.get(map.get("teamType")));
+			
+			allRecords = alarmInfoService.selectAllRecords(queryCondition);
+			
+			queryCondition.setPageBegin(begin);
+			queryCondition.setPageEnd(rows);
+		} catch (Exception e) {
+			logger.error("query", e);
+		}
 		
 		List<AlarmDeviceInfoBo> devices = null;
-		
-		List<AlarmInfoBo> list = null;
 		
 		List<AlarmMicMonitorBo> micMonitors = null;
 		
@@ -115,10 +131,7 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 			
 			// check all mic monitors
 			micMonitors = alarmDeviceInfoService.selectAllMics(queryCondition);
-			
-			// clear the call type with null or ""? loschen
-//			queryCondition.setCallType(null);
-			
+						
 			list = alarmInfoService.selectAll(queryCondition);
 			
 			int size = list.size();
@@ -150,6 +163,7 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 			for(AlarmInfoBo tempAlarmInfoBo: list){
 				if((tempAlarmInfoBo.getCallType()).compareTo("5") != 0){
 					list.remove(tempAlarmInfoBo);
+					allRecords.remove(tempAlarmInfoBo);
 					continue;
 				}
 				
@@ -158,6 +172,7 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 						if((tempMicMonitor.getResult()).compareTo("Normal") == 0 || 
 								(tempMicMonitor.getResult()).compareTo("NODATE") == 0){
 							list.remove(tempAlarmInfoBo);
+							allRecords.remove(tempAlarmInfoBo);
 						}
 					}
 				}
@@ -193,19 +208,37 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 			}
 		}
 		
+		// Show all corresponded records
+		if(allRecords != null){
+			for(AlarmInfoBo tempBo: allRecords){
+				if(tempBo.getDepartment() != null) {
+					if(tempBo.getDepartment().endsWith("区")){
+						tempBo.setDepartment(teamTypeMap.get(tempBo.getDepartment()));
+					}
+				}
+				
+				if(tempBo.getCallType() != null){
+					if(tempBo.getCallType().endsWith("1") || tempBo.getCallType().endsWith("2") || tempBo.getCallType().endsWith("3") ||
+						tempBo.getCallType().endsWith("4") || tempBo.getCallType().endsWith("5")){
+						tempBo.setCallType(callTypeMap.get(tempBo.getCallType()));
+					}
+				}
+				logger.info(tempBo.toString());
+			}
+		}
+		
 		int count = alarmInfoService.queryCount(queryCondition);
 		GridQueryResult g = new GridQueryResult(count, list);
 		
 		return g;
 	}
 	
-	@RequestMapping(value = "/excelExport", method = RequestMethod.POST)
-	public @ResponseBody void exportExcel(HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/excelMyExport", method = RequestMethod.POST)
+	public @ResponseBody void exportMyExcel(HttpServletRequest request, HttpServletResponse response) {
 		
 		logger.info("In Export Excel: " + request.getPathInfo());
 		
 		AlarmInfoQueryCondition condition = new AlarmInfoQueryCondition();
-		
 		condition.setCallType(request.getParameter("callType"));
 		condition.setEndTime(request.getParameter("endTime"));
 		condition.setStartTime(request.getParameter("startTime"));
@@ -217,13 +250,15 @@ public class AlarmQueryController extends QueryController<AlarmInfoQueryConditio
 		//String baseSavePath = System.getProperty("java.io.tmpdir");
 		String realPath = baseSavePath + path;
 		
-		List<AlarmInfoBo> list = alarmInfoService.selectAll(condition);
+		//List<AlarmInfoBo> list = alarmInfoService.selectAll(condition);
 		
-		String[] headerNames = new String[] {"报警时间", "所属部门", "地点", "报警类型"};
-		String[] fieldNames = new String[] {"id", "callTime", "department", "location", "callType"};
-		String itemName = "序号";
+		logger.info(Arrays.toString(list.toArray()));
 		
-		ExcelUtil.generateExcel(realPath, headerNames, fieldNames, list, itemName);
+		String[] headerNames = new String[] {"所属部门", "地点", "报警类型"};
+		String[] fieldNames = new String[] {"callTime", "department", "location", "callType"};
+		String itemName = "报警时间";
+		
+		ExcelUtil.generateExcel(realPath, headerNames, fieldNames, allRecords, itemName);
 		ExcelUtil.downLoadExcel(realPath, response);
 
 	}
