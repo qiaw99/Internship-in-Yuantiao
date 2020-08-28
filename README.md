@@ -4,7 +4,7 @@ Code while having internship in Yuantiao.
 - Working Responsibility: Software Development 
 - Working fields: 
   - Implementation of an alarm query on a website
-  - Rending a 3D Model
+  - Rendering a 3D Model
 
 - Used technologies:
 
