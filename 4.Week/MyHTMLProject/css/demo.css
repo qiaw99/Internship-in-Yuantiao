@@ -1,0 +1,30 @@
+/* 元素选择器 */
+h1 {
+	font-size: 50px;
+	color: orchid;
+	border: 1px dotted crimson;
+}
+
+/* 类选择器 */
+.number{
+	color: royalblue;
+	font-size: 20px;
+	height: 100px;
+	width: 2 00px;
+	border: 2px double crimson;
+	/* ff 红色 ef 绿色 c3 蓝色*/
+	background-color:  #ffefc3;
+}
+
+/* id选择器 */
+#test{
+	color: #DC143C;
+	font-size: 80px;
+	border: 1px solid coral;
+	float: left;
+}
+
+html body p{
+	color: aqua;
+	font-size: 80px;
+}

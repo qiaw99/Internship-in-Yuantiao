@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			.test{
+				color: crimson;
+			}
+			
+			.test2{
+				color: blue;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" id="t1" value="hello world"/>
+		
+		<input type="checkbox" name="hobby" value="programming" />
+		<input type="checkbox" name="hobby" value="running" />
+		<input type="checkbox" name="hobby" value="reading" />
+
+		<ul>
+			<li>JavaEE</li>
+			<li>Android</li>
+			<li>IOS</li>
+			<li>php</li>
+		</ul>
+
+		<input type="radio" name="sex" value="woman" class="h1" />
+		<input type="radio" name="sex" value="man" class="h1" />
+		
+		<span id="s1" class="test">change the span color</span>
+
+		<script>
+			var t1 = document.getElementById("t1");
+			var arr = document.getElementsByName("hobby");
+			var arr1 = document.getElementsByTagName("li");
+			var arr2 = document.getElementsByClassName("h1");
+			
+			var text = document.getElementById("t1");
+			text.value = "changed!";
+			
+			var s = document.getElementById("s1");
+			s.className = "test2";
+			s.innerHTML = "change the text!";
+		</script>
+	</body>
+</html>

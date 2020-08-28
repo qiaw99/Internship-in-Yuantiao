@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<form>
+			ID: <input type="hidden" name="uid" value="12345"/><br />
+			用户名: <input type="text" name="userName"/> <br />
+			密码: <input type="password" name="passWord"/> <br />
+			ReadOnly <input type="text" value="xxx" readonly="readonly" /><br />
+			Disabled <input type="text" disabled="disabled" value="disabled!!"/> <br/>
+
+			性别: <input type="radio" name="sex" value="male" checked="checked"/>男
+			<input type="radio" name="sex" value="female" />女
+			<!-- <input type="radio" name="sex1"/>公
+				  <input type="radio" name="sex1"/>母 -->
+			<br />	  
+				  
+			爱好: 
+				<input type="checkbox" name="hobby" value="programming" checked="checked"/>编程 
+				<input type="checkbox" name="hobby" value="read"/>阅读
+				<input type="checkbox" name="hobby" value="run"/>跑步
+				<br />
+				照片:<input type="file" name="foto"/>
+				<br />
+				<br />
+			<input type="reset" />
+			<input type="submit" />
+			<input type="button" value="Button"/><br /><br />
+		</form>
+		
+		<form>
+			城市:<select name="city">
+				<option>请选择城市</option>
+				<option value="1" selected="selected">杭州</option>
+				<option value="2">嘉兴</option>
+				<option value="3">平湖</option>
+			</select><br /><br />
+			
+			<select name="hobby" multiple="multiple">
+				<option value="programming">编程</option>
+				<option value="reading">读书</option>
+				<option value="running">跑步</option>
+			</select><br /><br />
+			<input type="submit" /><br /><br />
+			
+		</form>
+		
+		<form>
+			Self Introduction:<br>
+			<textarea name="introduction"></textarea><br />
+			<input type="submit" />
+		</form>
+	</body>
+</html>

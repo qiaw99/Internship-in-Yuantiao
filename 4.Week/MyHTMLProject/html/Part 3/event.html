@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<!-- 加载完毕事件: 元素组件加载完毕时触发 -->
+	<body onload="haveLoaded()">
+		<!-- 点击事件 -->
+		<input type="button" value="click" onclick="haveClicked()"/>
+		<!-- 获取, 失去焦点事件 -->
+<!-- 		<input type="text" onfocus="getFocus()" onblur="loseFocus()"/>
+ -->		
+		<!-- 选择域值发生改变 -->
+		<select onchange="haveChanged()">
+			<option value="shanghai">上海</option>
+			<option value="beijing">北京</option>
+			<option value="hangzhou">杭州</option>
+		</select>
+		
+		<!-- 用于表单校验， 控制表单的提交 -->
+		<form onsubmit="return sumbitForm()">
+			<input type="text" name="userName" /><br />
+			<input type="submit" value="submit" />
+		</form>
+		
+		<!-- 键位谈起事件 -->
+		<input type="text" onkeyup="keyUp()"/>
+		
+		<input  type="text" onmouseover="mouseOver" onmouseout="mouseOut()"/>
+		
+		<input type="text" onclick="run('Hello World')" />
+		
+		<script>
+			function haveClicked(){
+				alert("clicked");
+			}
+			
+			function getFocus(){
+				alert("get focus!");
+			}
+			
+			function loseFocus(){
+				alert("lose focus!");
+			}
+			
+			function haveChanged(){
+				alert("The value has been changed!")
+			}
+			
+			function haveLoaded(){
+				alert("all elements are loaded!");
+			}
+			
+			function sumbitForm(){
+				alert("form has been submitted!");
+				return true;
+			}
+			
+			function keyUp(){
+				alert("key up");
+			}
+			
+			function mouseOver(){
+				alert("mouse over!");
+			}
+			
+			function mouseOut(){
+				alert("mouse out!");
+			}
+			
+			function run(str){
+				alert(str);
+			}
+			
+			/* DOM绑定：对象.事件属性 */
+			window.onload = function(){
+				haveLoaded();
+			};
+		</script>
+	</body>
+</html>
