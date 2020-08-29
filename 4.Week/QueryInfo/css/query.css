@@ -1,0 +1,28 @@
+.start{
+	width: 100px;
+}
+
+.end{
+	width: 100px;
+}
+
+.product{
+	border: 1px solid crimson;
+}
+
+a{
+	color: royalblue;
+	/* border: 1px dotted royalblue; */
+}
+p{
+	display: inline;
+	color: chocolate;
+}
+
+th{
+	color: coral;
+}
+
+tr{
+	color: lightcoral;
+}

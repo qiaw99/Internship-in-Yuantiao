@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<ul class="nav">
+			<li>1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+		</ul>
+		
+		<script>
+			var list = document.querySelector(".nav").querySelectorAll("li");
+			for(var i = 0; i < list.length; i++){
+				(function(i){
+					setTimeout(function(){
+						console.log(list[i].innerHTML);
+					}, 2000);
+				})(i);
+			}
+			
+			var car = (function(){
+				var start = 13;
+				var total = 0;
+				return {
+					price: function(n){
+						if(n <= 3){
+							total = start;
+						} else{
+							total = start + (n - 3) * 5;
+						}
+						return total;
+					},
+					jam: function(flag){
+						return flag ? total + 10 : total;
+					},
+				}
+			})();
+			console.log(car.price(5));
+			console.log(car.jam(true));
+			
+		</script>
+	</body>
+</html>

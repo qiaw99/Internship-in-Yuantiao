@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<buttom>click</buttom>
+		
+		<script>
+			class Star {
+				constructor(userName, age) {
+					this.userName = userName;
+					this.age = age;
+					this.btn = document.querySelector("buttom");
+					this.btn.onclick = this.sing;
+				}
+			}
+			
+			Star.prototype.sing = function() {
+				console.log("singing...");
+			};
+				
+			Star.prototype.movie = function(){
+				console.log("Acting movies");
+			};	
+			
+			var s1 = new Star("star 1", 18);
+			console.log(s1.userName);
+			s1.movie();
+		</script>
+	</body>
+</html>

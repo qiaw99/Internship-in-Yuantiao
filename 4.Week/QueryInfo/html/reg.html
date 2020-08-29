@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			var regexp = new RegExp(/123/);
+			console.log(regexp.test(123));
+			
+			//精确匹配
+			var rg = /^123$/;
+			
+			//[]表示只要括号内有一个就返回true
+			var rg1 = /[a, b, c]/;
+			console.log(rg1.test("bob"));
+			
+			// 26个字符都返回true, - 表示范围 
+			var rg2 = /^[a-zA-Z0-9_]{3, 16}$/;
+			
+			//中括号里的^表示取反： 不能是a-z
+			var rg3 = /^[^a-z]/;
+			
+			// * 表示a可以出现0次或者多次
+			var rg4 = /^a*/;
+			
+			// + 表示可以出现1次或者多次
+			var rg5 = /^a+/;
+			
+			// ? 表示出现0次或者1次
+			var rg6 = /^a?/;
+			
+			// {n} 重复n次
+			var rg7 = /^a{3}/;
+			
+			// {n,} 重复大于等于n次
+			var rg8 = /^a{3,}/;
+			
+			// {n, m} 重复大于等于n次， 小于等于m
+			var rg9 = /^a{3,10}/;
+			
+			// \d匹配0-9之间的任一数字 相当于[0-9]
+			var rg10 = /\d/;
+			
+			// \D匹配0-9以外的任一字符 相当于[^0-9]
+			var rg11 = /\D/;
+			
+			// \w匹配任意字母、数字和下划线 相当于[A-Za-z0-9_]
+			var rg11 = /\w/;
+			
+			// \W匹配任意除字母、数字和下划线 相当于[^A-Za-z0-9_]
+			var rg12 = /\W/;
+			
+			//匹配空格（包括换行符、制表符、空格符等），相当于[\t\r\n\f]
+			var rg13 = /\s/;
+			
+			//匹配非空格（包括换行符、制表符、空格符等），相当于[^\t\r\n\f]
+			var rg13 = /\S/;
+		</script>
+	</body>
+</html>

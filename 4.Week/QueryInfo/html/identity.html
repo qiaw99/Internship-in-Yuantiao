@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			span{
+				color: #aaa;
+				font-size:  14px;
+			}
+			
+			.right{
+				color: green;
+			}
+			
+			.wrong{
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" class="uname"/> <span>请输入用户名:</span>
+		
+		<script>
+			var reg = /^[a-zA-Z0-9_-]{6,16}$/;
+			var span = document.querySelector("span");
+			
+			var userName = document.querySelector(".uname");
+			userName.onblur = function(){
+				if(reg.test(this.value)){
+					span.className = "right";
+					span.innerHTML = "用户名输入正确";
+				} else{
+					span.className = "wrong";
+					span.innerHTML = "用户名6-16位，只能包含字母、数字、_ 、-";
+				}
+			};
+		</script>
+	</body>
+</html>
