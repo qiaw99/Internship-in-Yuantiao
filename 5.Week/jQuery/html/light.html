@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<button>open</button>
+		<button>close</button>
+		<img src="../img/light.jpg" />
+		
+		<script>
+			$(function(){
+				var btns = document.getElementsByTagName("button");
+				
+				btns[1].onclick = function(){
+					$('body').css('backgroundColor', 'black');
+				}
+				
+				$(btns[0]).click(function(){
+					$('body')[0].style.backgroundColor = 'white';
+				});
+			});
+		</script>	
+	</body>
+</html>

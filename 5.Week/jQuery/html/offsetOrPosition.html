@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/offsetOrPosition.css" />
+		<script src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<input type="button" value="offset()" id="btn1"/>
+		<input type="button" value="position()" id="btn2"/>
+		
+		<div id="father" class="father">
+			<div id="son" class="son">
+				
+			</div>
+		</div>
+		
+		<script>
+			$(function(){
+				$('#btn1').click(function(){
+					/* 1.offset()：获取一个对象，包含top和left值 
+						获取元素距离document的位置
+					*/
+					console.log($('#son').offset());
+				});
+				
+				$('#btn2').click(function(){
+					/* 1.position()：获取一个对象，包含top和left值 
+						获取元素距离有定位的父元素的位置
+					*/
+					console.log($('#son').position());
+				});
+			});
+		</script>
+	</body>
+</html>

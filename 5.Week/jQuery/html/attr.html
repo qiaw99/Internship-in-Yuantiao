@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<input type="button" value="获取属性" id="btn1"/>
+		<input type="button" value="设置属性" id="btn2"/>
+		<input type="button" value="移出属性" id="btn3"/>
+		
+		<br />
+		<br />
+		
+		<img src="../img/dog.gif" alt="jumping dog" title="dog" aaa='aaa'/>
+		
+		<script>
+			$(function(){
+				/* jQuery中操作属性: attr() removeAttr() */
+				/* 1. 设置属性 */
+				$('#btn2').click(function(){
+					//以前有src属性，则更改属性
+					// $('img').attr('src', '../img/2.gif');
+					
+					// //如果没有这个属性，那就添加该属性
+					// $('img').attr('aaa', 'aaa');
+					
+					$('img').attr({
+						src:'../img/2.gif',
+						aaa: 'aaaa',
+						bbb: 'bbb'
+					});
+				});
+				
+				/* 2.获取属性： 如果没有这个属性，则返回undefined */
+				$('#btn1').click(function(){
+					console.log($('img').attr('src'));
+				});
+				
+				/* 3. 移除属性 */
+				$('#btn3').click(function(){
+					$('img').removeAttr('alt');
+					// 移除多属性
+					//$('img').removeAttr('alt src aaa');
+				});
+			});
+		</script>
+	</body>
+</html>

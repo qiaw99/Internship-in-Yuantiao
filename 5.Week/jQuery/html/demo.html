@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script>
+			/* 原生js不能添加多个入口函数：onload */
+			window.onload = function(){
+				var btnOne = document.getElementById("btnOne");
+				var btnTwo = document.getElementById("btnTwo");
+				var divs = document.getElementsByTagName("div");
+				
+				btnOne.onclick = function(){
+					for(let i = 0; i < divs.length; i++){
+						divs[i].style.border = "1px solid red";
+					}
+				}
+				
+				btnTwo.onclick = function (){
+					for(let i = 0; i < divs.length; i++){
+						divs[i].innerHTML = "configured text";
+					}
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<input type="button" value="设置边框" id="btnOne"/>
+		<input type="button" value="设置文本" id="btnTwo" />
+		<div></div>
+		<div></div>
+		<div></div>
+	</body>
+</html>

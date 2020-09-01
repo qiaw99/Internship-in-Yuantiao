@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+		<style>
+			.one{
+				border: 1px solid #FF4500;
+				width: 200px;
+				height: 200px;
+			}
+			
+			.two{
+				border: 1px solid #4169E1;
+				width: 200px;
+				height: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="button" value="button" id="btn" />
+		<br /><br />
+		<div class="one" id="one"></div>
+		
+		<script>
+			$(function(){
+				/* 原生js注册相同的事件，后面的会把前面的覆盖 */
+				document.getElementById("one").onclick = function(){
+					alert('click');
+				}
+				
+				/* jQuery不会覆盖 */
+				$('#one').click(function(){
+					alert("clicked!"); 
+				});
+				
+				$('#btn').click(function(){
+					var $divNew = $('<div class="two"></div>');
+					$('body').append($divNew);
+				});
+				
+				/* 1.简单事件绑定,不支持同时注册，也不支持动态注册 
+				动态注册就是生成的div会不会继承原来div绑定的方法
+				*/
+				$('div').click(function(){
+					console.log("clicked!");
+				});
+				
+				$('div').mouseenter(function(){
+					console.log("entered!");
+				});
+				
+				/* 2.bind方式注册事件,支持同时注册但不支持动态注册 */
+				$('div').bind({
+					mouseenter: function(){
+						console.log("entered!");
+					},
+					click: function(){
+						console.log("clicked!");
+					}
+				});
+				
+				/* 3.delegate注册事件，支持同时注册也支持动态注册 */
+				//原理是事件冒泡。一开始要指定其父元素
+				$('body').delegate('div', {
+					mouseenter: function(){
+						console.log("entered!");
+					},
+					click: function(){
+						console.log("clicked!");
+					}
+				});
+				
+				/* 4. jQuery 1.7以后统一使用on*/
+				// 1. 用on简单注册事件,不支持动态注册
+				$('div').on('click', function(){
+					console.log("clicked!");
+				});
+				
+				// 2. 用on委托注册, 需要指明父元素以及委托元素，支持动态注册
+				$('body').on('click', 'div', function(){
+					console.log("clicked!");
+				});
+				
+				/* 用off解绑事件 */
+				//不给参数就是解绑所有事件
+				$('div').off();
+				
+				//给参数就说解绑指定事件
+				$('div').off('click');
+			});
+		</script>
+	</body>
+</html>

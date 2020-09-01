@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+	<body>
+		<input type="button" value="button" id="btn" />
+		
+		<ul id="ul1">
+			<li>1</li>
+			<li>2</li>
+			<li id="li3">3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+		
+		<script>
+			$(function(){
+				$('#btn').click(function(){
+					/* 1.清空ul: 只会清空里面的内容，ul本身不会消失 */
+					//不安全， 有可能会造成内存泄漏
+					//$('#ul1').html('');
+					
+					$('#ul1').empty();
+					
+					/* 2. 移除某一个元素：*/
+					$('#li3').remove();
+
+					/* 3.移出ul， ul本身也会被移除 */
+					$('#li3').parent().remove();
+				});
+			});
+		</script>
+	</body>
+</html>

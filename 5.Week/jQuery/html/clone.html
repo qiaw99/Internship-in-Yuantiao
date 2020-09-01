@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+		<style>
+			#div1{
+				width: 400px;
+				height: 200px;
+				border: 1px solid red;
+			}
+			
+			#div2{
+				width: 400px;
+				height: 200px;
+				border: 1px solid yellowgreen;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="button" value="clone" id="clone" />
+		<div id="div1">
+			<p>p1
+				<b>b1</b>
+			</p>
+		</div>
+		
+		<br /><br />
+		
+		<script>
+			$(function(){
+				//只存在内存中，要在页面上显示需要追加到页面上
+				$('#clone').click(function(){
+					//如果参数是true表示会把绑定的事件一起克隆， 默认是false
+					var $cloneDiv = $('#div1').clone(false);
+					$cloneDiv.attr('id', 'div2');
+					$('body').append($cloneDiv);
+				});
+			})
+		</script>
+	</body>
+</html>

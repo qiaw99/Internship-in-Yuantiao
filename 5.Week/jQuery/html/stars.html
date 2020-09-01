@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			*{
+				padding: 0px;
+				margin: 0px;
+			}
+			
+			ul{
+				list-style: none;
+			}
+			
+			li{
+				/* display: inline-block; */
+				float: left;
+				cursor: pointer;
+			}
+			
+			.comment{
+				font-size: 40px;
+				color: red;
+			}
+		</style>
+		<script type="text/javascript" src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<ul class="comment">
+			<li>☆</li>
+			<li>☆</li>
+			<li>☆</li>
+			<li>☆</li>
+			<li>☆</li>
+		</ul>
+		
+		<script type="text/javascript">
+			$(function(){
+				// prev()上一个兄弟 prevAll()之前所有的兄弟
+				$('.comment>li').on('mouseenter', function(){
+					$(this).text('★').prevAll().text('★');
+					$(this).nextAll().text('☆');
+				}).on('mouseleave', function(){
+					$('.comment>li').text('☆');
+					
+					/* end()会返回上一个对象（状态），但也需要是jQuery对象才能调用end方法 */
+					$('.comment>li[clickCurrent]').text('★').prevAll().text('★').end().nextAll().text('☆');
+				}).on('click', function(){
+					$(this).attr('clickCurrent', 'current').siblings().remove('clickCurrent');
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+		<style type="text/css">
+			h1 {
+				font: "arial black";
+			}
+
+			div {
+				height: 200px;
+				width: 200px;
+				position: relative;
+				top: 50px;
+				left: 50px;
+				border: 1px solid aqua;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>按键改变颜色</h1>
+		<div id="bgChange">
+			keyCode为：
+			<span id="keyCodeSpan"></span>
+		</div>
+		<script type="text/javascript">
+			$(function() {
+				var $div = $('#bgChange');
+				var  $spanCode = $('#keyCodeSpan');
+
+				$(document).on('keydown', function(e) {
+					// r 82 g 71 b 66 p 90 y 89
+					console.log(e.keyCode);
+					switch (e.keyCode) {
+						case 82:
+							$div.css('background-color', 'red');
+							$spanCode.text(82);
+							break;
+						case 71:
+							$div.css('background-color', 'green');
+							$spanCode.text(71);
+							break;
+						case 66:
+							$div.css('background-color', 'blue');
+							$spanCode.text(66);
+							break;
+						case 90:
+							$div.css('background-color', 'purple');
+							$spanCode.text(90);
+						case 89:
+							$div.css('background-color', 'yellow');
+							$spanCode.text(89);
+							break;
+						default:
+							$div.css('background-color', 'pink');
+							$spanCode.text("not found!");
+							break;
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

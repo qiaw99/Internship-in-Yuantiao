@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+		
+	</head>
+	<body>
+		<div id='father'>
+			<div>
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+
+			<div>
+				<span></span>
+				<span></span>
+				<span></span>
+				<div></div>
+			</div>
+			<div></div>
+			<p></p>
+			<p></p>
+		</div>
+
+		<ul>
+			<li>1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+		
+		
+
+		<script>
+			/* 层次选择器 */
+			// 获取id为father元素的所有子div标签
+			console.log($('#father > div'));
+
+			//获取所有的子div以及子p
+			console.log('#father > (div, p)');
+
+			//获取id为father这个div的所有后代div
+			console.log('#father div');
+
+			/* 过滤选择器 */
+			$(function() {
+				//设置奇数行
+				$('li:odd').css('background-color', 'skyblue');
+
+				//偶数行
+				$('li:even').css('background-color', 'pink');
+
+				//索引为0的元素
+				$('li.eq(4)').css()
+				$('li:eq(0)').css('background-color', 'red');
+			})
+		</script>
+	</body>
+</html>

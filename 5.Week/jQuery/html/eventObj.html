@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+		<style>
+			div{
+				border: 1px solid #FF4500;
+				height: 200px;
+				width: 200px;
+				margin-top: 50px;
+				margin-left: 50px;
+			}
+			#btn{
+				margin: 50px;
+				margin-left: 70px;
+			}
+			a{
+				margin-left: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="one" class="one">
+			<input type="button" id="btn" value="button"/>
+			<br /><br />
+			<a href="http://www.baidu.com">百度一下,你就知道</a>
+		</div> 
+		
+		<script>
+			$(function(){
+				/* 注册一个事件，系统会生成一个对象记录这个事件触发的一些信息
+				 jQuery中用事件e来获取, 对原生js事件的封装 */
+				$('#one').on('click', function(e){
+					console.log(e);
+					
+					/* 事件对象中常用的三个坐标 */
+					/* 离屏幕左上角的坐标距离 */
+					console.log("ScreenX: " + e.screenX + ", ScreenY: " + e.screenY);
+					
+					/* 离客户端左上角的坐标距离（忽略滚动条） */
+					console.log("ClientX: " + e.clientX + ", ClientY: " + e.clientY);
+					
+					/* 页面最顶部的左上角的位置（会计算滚动条的距离） */
+					console.log("PageX: " + e.pageX + ", PageY: " + e.pageY);
+				
+					alert("div click");
+				}); 
+				
+				$('#btn').on('click', function(e){
+					alert('button click');
+					//阻止事件冒泡：div中的alert就不会被触发
+					e.stopPropagation();
+				});
+				
+				$('a').on('click', function(e){
+					alert('a click');
+					e.stopPropagation();
+					
+					//阻止默认行为，对于a就是取消自动跳转页面
+					e.preventDefault();
+					
+					//既能阻止事件冒泡也能阻止默认行为
+					return false;
+				});
+				
+				$(document).on('keydown', function(e){
+					//获取按的那个键
+					console.log(e.keyCode);
+				});
+			});
+		</script>
+	</body>
+</html>

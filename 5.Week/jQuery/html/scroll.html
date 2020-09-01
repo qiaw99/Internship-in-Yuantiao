@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			body{
+				width: 2000px;
+				height: 2000px;
+			}
+			
+			div{
+				width: 700px;
+				height: 300px;
+				border: 1px solid red;
+				overflow: auto;
+			}
+			
+			img{
+				vertical-align: top;
+				width: 1000px;
+				height: 400px;
+			}
+		</style>
+		<script src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<input type="button" value="button" id="btn" />
+		<div>
+			<img src="../1.png" alt="" />
+		</div>
+		
+		<script>
+			$(function(){
+				$('div').click(function(){
+					/* scrollLeft()表示元素内容被卷曲的宽度，Top就是高度 */
+					console.log($('div').scrollLeft() + " : " + $('div').scrollTop());
+					$('div').scrollLeft(100);
+					$('div').scrollTop(100);
+					
+					/* 获取页面被卷曲的高度 */
+					$(window).scrollTop();
+					$(window).scrollLeft();
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<input type="button" value="button" id="btn" />
+		<input type="checkbox" id="ckb" />
+		<br />
+		
+		<script>
+			$(function(){
+				//原生js
+				// document.getElementById("btn").onclick = function(){
+				// 	document.getElementById("ckb").checked = true;
+				// }
+				
+				/* jQuery 1.6之后，checked，selected，disabled
+				这类的boolean类型的属性只能使用prop设置 */
+				$('#btn').click(function(){
+					$('#ckb').prop("checked", true);
+				})
+			});
+		</script>
+	</body>
+</html>

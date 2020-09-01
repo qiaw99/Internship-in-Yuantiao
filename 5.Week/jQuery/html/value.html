@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../js/jquery-3.5.1.js"></script>
+	</head>
+	<body>
+		<input type="button" value="button" id="btn" />
+		<input type="text" id="txt" value="请输入账号"/>
+		
+		<script>
+			$(function(){
+				$('#btn').click(function(){
+					/* 1.val()方法不给参数就说获取value */
+					console.log($('#txt').val());
+					
+					/* 2.给参数就是要设置的值 */
+					$('#txt').val("test");
+				})
+			});
+		</script>
+	</body>
+</html>

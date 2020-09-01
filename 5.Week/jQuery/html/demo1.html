@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src='../js/jquery-3.5.1.js'></script>
+	</head>
+	<body>
+		<input type="button" value="设置边框" id="btnOne"/>
+		<input type="button" value="设置文本" id="btnTwo" />
+		<div id="one"></div>
+		<div></div>
+		<div></div>
+		
+		<script>
+			/* jQuery的入口函数要快于onload
+			 jQuery等到页面上的dom数加载完后执行
+			 on要等所有资源加载完才会执行
+			 */
+			
+			// 入口函数的简介写法：
+			/* $(function(){
+				
+			}); */
+			
+			$(document).ready(function(){
+				$('#btnOne').click(function(){
+					$('div').css('border', '1px solid red');
+				});
+				
+				/* 隐式迭代 */
+				$('#btnTwo').click(function(){
+					$('div').text("configured text").width(100).height(100).css("backgroundColor", 'yellow');
+				});
+			});
+			
+			$(document).ready(function(){
+				console.log("Another ready function");
+			});
+			
+			var div1 = document.getElementById("one");
+			// dom --> jQuery
+			var $div1 = $(div1);
+			console.log($div1);
+			
+			//jQuery --> dom
+			// 1. 使用下标
+			var $divs = $('div');
+			var div2 = $divs[0];
+			console.log(div2);
+			
+			// 2.使用jQuer的get()方法
+			var div3 = $divs.get(1);
+			console.log(div3);
+		</script>
+	</body>
+</html>
