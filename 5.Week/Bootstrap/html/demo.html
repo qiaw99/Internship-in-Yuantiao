@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Bootstrap Template</title>
+
+		<!-- Bootstrap -->
+		<link href="../css/bootstrap.css" rel="stylesheet">
+		
+		<script src="../js/bootstrap.js"></script>
+		<script src="../js/jquery-3.5.1.js"></script>
+		
+	</head>
+	<body>
+		<!-- 定义布局容器 -->
+		<div class="container">
+			<!-- 定义行 -->
+			<div class="row">
+				<!-- 定义列 行和列可以无限嵌套-->
+				<!-- 
+					响应式开发：
+					lg: large
+					md: medium
+					smL small
+					xs: x small
+					如果设置了一个屏幕尺寸，比这个尺寸大的平步，继承了当前设置，
+					比这个尺寸小的屏幕，默认一个元素占一行
+				-->
+				<div class="col-lg-4 col-md-3 col-sm-2" style="border: 1px solid red;">
+					<div class="row">
+						<div class="col-lg-10" style="border: 1px solid blueviolet;">
+							111111
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-lg-4 col-md-3 col-sm-2" style="border: 1px solid red;">
+					222222
+				</div>
+				
+				<div class="col-lg-4 col-md-3 col-sm-8" style="border: 1px solid red;">
+ 					3333333
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

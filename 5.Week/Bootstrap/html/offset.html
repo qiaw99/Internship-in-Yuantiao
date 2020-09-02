@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<!-- 使用IE最新的渲染模式展示页面 -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!-- 
+			视口：浏览器上 网页内容 可视区域 
+			用于移动设备将大型页面进行比例缩放显示 
+			 
+			width=device-width 设置视口的宽度，采用设备的宽度
+			initial-scale=1 初始话缩放级别100%	1~5
+			minimum-scale=1 最小缩放的集别
+			maximum-scale=5
+			user-scalable=no禁止缩放
+		-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Bootstrap Template</title>
+
+		<!-- Bootstrap -->
+		<link href="../css/bootstrap.css" rel="stylesheet">
+		
+		<script src="../js/bootstrap.js"></script>
+		<script src="../js/jquery-3.5.1.js"></script>
+		
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<!-- 列偏移： 将列元素向右偏移 -->
+				<div class="col-lg-3 col-lg-offset-4" style="border: 1px solid royalblue;">
+					2222
+				</div>
+			</div>
+			
+			<!-- 
+				相应式工具： .visible-xs-*, .hidden-xs
+			 -->
+			<div class="row">
+				<div class="col-lg-4" style="border: 1px solid orangered;">
+					111
+				</div>
+				<div class="col-lg-4 visible-lg" style="border: 1px solid orangered;">
+					222
+				</div>
+				<div class="col-lg-4" style="border: 1px solid orangered;">
+					333
+				</div>
+			</div>
+			
+			<br /><br/>
+			
+			<!-- 将列表所有元素放置一行 -->
+			<ul class="list-inline">
+				<li>1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+			</ul>
+		</div>
+	</body>
+</html>
