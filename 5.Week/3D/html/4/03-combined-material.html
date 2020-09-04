@@ -4,10 +4,10 @@
 
 <head>
     <title>Example 04.03 - Combined Material</title>
-    <script type="text/javascript" src="../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/three.js"></script>
 
-    <script type="text/javascript" src="../libs/stats.js"></script>
-    <script type="text/javascript" src="../libs/dat.gui.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
     <style>
         body {
             /* set margin to 0 and overflow to hidden, to go fullscreen */
@@ -68,7 +68,6 @@
             this.numberOfObjects = scene.children.length;
             this.color = 0x00ff00;
 
-
             this.removeCube = function () {
                 var allChildren = scene.children;
                 var lastObject = allChildren[allChildren.length - 1];
@@ -83,11 +82,12 @@
                 var cubeSize = Math.ceil(3 + (Math.random() * 3));
                 var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
-                //var cubeMaterial = new THREE.MeshLambertMaterial({color:  Math.random() * 0xffffff });
+				// 混合两种材质
                 var cubeMaterial = new THREE.MeshDepthMaterial();
                 var colorMaterial = new THREE.MeshBasicMaterial({
                     color: controls.color,
                     transparent: true,
+					// 融合属性
                     blending: THREE.MultiplyBlending
                 });
                 var cube = new THREE.SceneUtils.createMultiMaterialObject(cubeGeometry, [colorMaterial, cubeMaterial]);
@@ -111,6 +111,7 @@
 
         var gui = new dat.GUI();
         gui.addColor(controls, 'color');
+		//gui.add(controls, 'outputObjects');
         gui.add(controls, 'rotationSpeed', 0, 0.5);
         gui.add(controls, 'addCube');
         gui.add(controls, 'removeCube');

@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-    <title>Example 04.08 - Shader material - http://glsl.heroku.com/</title>
-    <script type="text/javascript" src="../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/three.js"></script>
 
-    <script type="text/javascript" src="../libs/stats.js"></script>
-    <script type="text/javascript" src="../libs/dat.gui.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
     <style>
         body {
             /* set margin to 0 and overflow to hidden, to go fullscreen */
@@ -23,15 +20,13 @@
     uniform float time;
     varying vec2 vUv;
 
-
-    void main()
-    {
-    vec3 posChanged = position;
-    posChanged.x = posChanged.x*(abs(sin(time*1.0)));
-    posChanged.y = posChanged.y*(abs(cos(time*1.0)));
-    posChanged.z = posChanged.z*(abs(sin(time*1.0)));
-    //gl_Position = projectionMatrix * modelViewMatrix * vec4(position*(abs(sin(time)/2.0)+0.5),1.0);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(posChanged,1.0);
+    void main(){
+		vec3 posChanged = position;
+		posChanged.x = posChanged.x*(abs(sin(time*1.0)));
+		posChanged.y = posChanged.y*(abs(cos(time*1.0)));
+		posChanged.z = posChanged.z*(abs(sin(time*1.0)));
+		//gl_Position = projectionMatrix * modelViewMatrix * vec4(position*(abs(sin(time)/2.0)+0.5),1.0);
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(posChanged,1.0);
     }
 
 </script>
@@ -43,41 +38,38 @@
     uniform vec2 resolution;
     varying vec2 vUv;
 
-    void main2(void)
-    {
-    vec2 position = vUv;
-    float red = 1.0;
-    float green = 0.25 + sin(time) * 0.25;
-    float blue = 0.0;
-    vec3 rgb = vec3(red, green, blue);
-    vec4 color = vec4(rgb, alpha);
-    gl_FragColor = color;
+    void main2(void){
+		vec2 position = vUv;
+		float red = 1.0;
+		float green = 0.25 + sin(time) * 0.25;
+		float blue = 0.0;
+		vec3 rgb = vec3(red, green, blue);
+		vec4 color = vec4(rgb, alpha);
+		gl_FragColor = color;
     }
 
     #define PI 3.14159
     #define TWO_PI (PI*2.0)
     #define N 68.5
 
-    void main(void)
-    {
-    vec2 center = (gl_FragCoord.xy);
-    center.x=-10.12*sin(time/200.0);
-    center.y=-10.12*cos(time/200.0);
+    void main(void){
+		vec2 center = (gl_FragCoord.xy);
+		center.x=-10.12*sin(time/200.0);
+		center.y=-10.12*cos(time/200.0);
 
-    vec2 v = (gl_FragCoord.xy - resolution/20.0) / min(resolution.y,resolution.x) * 15.0;
-    v.x=v.x-10.0;
-    v.y=v.y-200.0;
-    float col = 0.0;
+		vec2 v = (gl_FragCoord.xy - resolution/20.0) / min(resolution.y,resolution.x) * 15.0;
+		v.x=v.x-10.0;
+		v.y=v.y-200.0;
+		float col = 0.0;
 
-    for(float i = 0.0; i < N; i++)
-    {
-    float a = i * (TWO_PI/N) * 61.95;
-    col += cos(TWO_PI*(v.y * cos(a) + v.x * sin(a) + sin(time*0.004)*100.0 ));
-    }
+		for(float i = 0.0; i < N; i++){
+			float a = i * (TWO_PI/N) * 61.95;
+			col += cos(TWO_PI*(v.y * cos(a) + v.x * sin(a) + sin(time*0.004)*100.0 ));
+		}
 
-    col /= 5.0;
+		col /= 5.0;
 
-    gl_FragColor = vec4(col*1.0, -col*1.0,-col*4.0, 1.0);
+		gl_FragColor = vec4(col*1.0, -col*1.0,-col*4.0, 1.0);
     }
 
 
@@ -85,7 +77,6 @@
 
 <script id="fragment-shader-2" type="x-shader/x-fragment">
     // from http://glsl.heroku.com/e#7906.0
-
 
     uniform float time;
     uniform vec2 resolution;
@@ -95,73 +86,68 @@
     #define CGFloat float
     #define M_PI 3.14159265359
 
-    vec3 hsvtorgb(float h, float s, float v)
-    {
-    float c = v * s;
-    h = mod((h * 6.0), 6.0);
-    float x = c * (1.0 - abs(mod(h, 2.0) - 1.0));
-    vec3 color;
+    vec3 hsvtorgb(float h, float s, float v){
+		float c = v * s;
+		h = mod((h * 6.0), 6.0);
+		float x = c * (1.0 - abs(mod(h, 2.0) - 1.0));
+		vec3 color;
 
-    if (0.0 <= h && h < 1.0)
-    {
-    color = vec3(c, x, 0.0);
-    }
-    else if (1.0 <= h && h < 2.0)
-    {
-    color = vec3(x, c, 0.0);
-    }
-    else if (2.0 <= h && h < 3.0)
-    {
-    color = vec3(0.0, c, x);
-    }
-    else if (3.0 <= h && h < 4.0)
-    {
-    color = vec3(0.0, x, c);
-    }
-    else if (4.0 <= h && h < 5.0)
-    {
-    color = vec3(x, 0.0, c);
-    }
-    else if (5.0 <= h && h < 6.0)
-    {
-    color = vec3(c, 0.0, x);
-    }
-    else
-    {
-    color = vec3(0.0);
-    }
+		if (0.0 <= h && h < 1.0){
+			color = vec3(c, x, 0.0);
+		}
+		else if (1.0 <= h && h < 2.0){
+			color = vec3(x, c, 0.0);
+		}
+		else if (2.0 <= h && h < 3.0){
+			color = vec3(0.0, c, x);
+		}
+		else if (3.0 <= h && h < 4.0)
+		{
+			color = vec3(0.0, x, c);
+		}
+		else if (4.0 <= h && h < 5.0)
+		{
+			color = vec3(x, 0.0, c);
+		}
+		else if (5.0 <= h && h < 6.0)
+		{
+			color = vec3(c, 0.0, x);
+		}
+		else
+		{
+			color = vec3(0.0);
+		}
 
-    color += v - c;
+		color += v - c;
 
-    return color;
+		return color;
     }
 
-    void main(void)
-    {
+    void main(void){
 
-    vec2 position = (gl_FragCoord.xy - 0.5 * resolution) / resolution.y;
-    float x = position.x;
-    float y = position.y;
+		vec2 position = (gl_FragCoord.xy - 0.5 * resolution) / resolution.y;
+		float x = position.x;
+		float y = position.y;
 
-    CGFloat a = atan(x, y);
+		CGFloat a = atan(x, y);
 
-    CGFloat d = sqrt(x*x+y*y);
-    CGFloat d0 = 0.5*(sin(d-time)+1.5)*d;
-    CGFloat d1 = 5.0;
+		CGFloat d = sqrt(x*x+y*y);
+		CGFloat d0 = 0.5*(sin(d-time)+1.5)*d;
+		CGFloat d1 = 5.0;
 
-    CGFloat u = mod(a*d1+sin(d*10.0+time), M_PI*2.0)/M_PI*0.5 - 0.5;
-    CGFloat v = mod(pow(d0*4.0, 0.75),1.0) - 0.5;
+		CGFloat u = mod(a*d1+sin(d*10.0+time), M_PI*2.0)/M_PI*0.5 - 0.5;
+		CGFloat v = mod(pow(d0*4.0, 0.75),1.0) - 0.5;
 
-    CGFloat dd = sqrt(u*u+v*v);
+		CGFloat dd = sqrt(u*u+v*v);
 
-    CGFloat aa = atan(u, v);
+		CGFloat aa = atan(u, v);
 
-    CGFloat uu = mod(aa*3.0+3.0*cos(dd*30.0-time), M_PI*2.0)/M_PI*0.5 - 0.5;
-    // CGFloat vv = mod(dd*4.0,1.0) - 0.5;
+		CGFloat uu = mod(aa*3.0+3.0*cos(dd*30.0-time), M_PI*2.0)/M_PI*0.5 - 0.5;
+		// CGFloat vv = mod(dd*4.0,1.0) - 0.5;
 
-    CGFloat d2 = sqrt(uu*uu+v*v)*1.5;
+		CGFloat d2 = sqrt(uu*uu+v*v)*1.5;
 
-    gl_FragColor = vec4( hsvtorgb(dd+time*0.5/d1, sin(dd*time), d2), 1.0 );
+		gl_FragColor = vec4( hsvtorgb(dd+time*0.5/d1, sin(dd*time), d2), 1.0 );
     }
 
 </script>
@@ -474,19 +460,26 @@
             uniforms.resolution.value.y = window.innerHeight;
 
             var meshMaterial = new THREE.ShaderMaterial({
+				//通过这个给属性可以向你的着色器发信息。同样的信息会发给每一个顶点和片段
                 uniforms: uniforms,
+				// 可以修改每个顶点和片段
                 attributes: attributes,
+				//这个着色器允许修改每一个传入顶点的位置
                 vertexShader: vertShader,
+				// 这个给着色器定义的是每个传入的像素的颜色
                 fragmentShader: fragShader,
-                transparent: true
+                transparent: true,
+				
+				/* 
+					defines： 转换成#define代码片段
+					lights： 定义光照数据是否传递给着色器，默认值是false
+				 */
 
             });
 
 
             return meshMaterial;
         }
-
-
     }
     window.onload = init;
 </script>

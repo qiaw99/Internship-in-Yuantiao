@@ -1,0 +1,35 @@
+{
+	"metadata": {
+		"version": 4.3,
+		"type": "Object",
+		"generator": "ObjectExporter"
+	},
+	"geometries": [{
+		"uuid": "8DCA6753-9466-4E81-B5E5-B2A0927688C6",
+		"type": "TorusKnotGeometry",
+		"radius": 11.027571133347587,
+		"tube": 1.7644113813356141,
+		"radialSegments": 400,
+		"tubularSegments": 8,
+		"p": 2,
+		"q": 3,
+		"heightScale": 1
+	}],
+	"materials": [{
+		"uuid": "FBC0D4A1-7154-421B-92DC-9DB9E001DC90",
+		"type": "MeshBasicMaterial",
+		"color": 11184810,
+		"vertexColors": 2,
+		"side": 2,
+		"wireframe": true
+	}],
+	"object": {
+		"uuid": "585057EF-FDD7-4346-AFD4-7BAD7EADDA99",
+		"type": "Mesh",
+		"geometry": "8DCA6753-9466-4E81-B5E5-B2A0927688C6",
+		"material": "FBC0D4A1-7154-421B-92DC-9DB9E001DC90",
+		"matrix": [0.982088029384613, 0, 0.1884227842092514, 0, 0, 1, 0, 0, -0.1884227842092514, 0, 0.982088029384613, 0, 0,
+			0, 0, 1
+		]
+	}
+}

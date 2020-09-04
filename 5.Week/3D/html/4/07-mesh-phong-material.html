@@ -4,12 +4,11 @@
 
 <head>
     <title>Example 04.07 - Mesh Phong material</title>
-    <script type="text/javascript" src="../libs/three.js"></script>
-
-    <script type="text/javascript" src="../libs/stats.js"></script>
-    <script type="text/javascript" src="../libs/dat.gui.js"></script>
-    <script type="text/javascript" src="../libs/CanvasRenderer.js"></script>
-    <script type="text/javascript" src="../libs/Projector.js"></script>
+    <script type="text/javascript" src="../../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
+    <script type="text/javascript" src="../../libs/CanvasRenderer.js"></script>
+    <script type="text/javascript" src="../../libs/Projector.js"></script>
 
     <style>
         body {
@@ -88,10 +87,6 @@
         camera.position.z = 40;
         camera.lookAt(new THREE.Vector3(10, 0, 0));
 
-        // add subtle ambient lighting
-//        var ambientLight = new THREE.AmbientLight(0x0c0c0c);
-//        scene.add(ambientLight);
-
         // add spotlight for the shadows
         var spotLight = new THREE.SpotLight(0xffffff);
         spotLight.position.set(-0, 30, 60);
@@ -115,12 +110,15 @@
             this.visible = meshMaterial.visible;
             this.emissive = meshMaterial.emissive.getHex();
             this.ambient = meshMaterial.ambient.getHex();
+			//指定该材质的发亮程度以及高光部分的颜色
             this.specular = meshMaterial.specular.getHex();
+			//指定高亮部分的亮度，默认值30
             this.shininess = meshMaterial.shininess;
             this.side = "front";
 
             this.color = meshMaterial.color.getStyle();
 
+			// true： 会使用不同的方式计算像素的颜色，使物体看起来更像金属
             this.metal = false;
             this.wrapAround = false;
             this.wrapR = 1;

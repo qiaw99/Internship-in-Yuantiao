@@ -4,12 +4,12 @@
 
 <head>
     <title>Example 04.06 - Mesh Lambert material</title>
-    <script type="text/javascript" src="../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/three.js"></script>
 
-    <script type="text/javascript" src="../libs/stats.js"></script>
-    <script type="text/javascript" src="../libs/dat.gui.js"></script>
-    <script type="text/javascript" src="../libs/CanvasRenderer.js"></script>
-    <script type="text/javascript" src="../libs/Projector.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
+    <script type="text/javascript" src="../../libs/Projector.js"></script>
+    <script type="text/javascript" src="../../libs/CanvasRenderer.js"></script>
 
     <style>
         body {
@@ -29,7 +29,7 @@
 
 <!-- Javascript code that runs our Three.js examples -->
 <script type="text/javascript">
-	/* 网格Lambert材质：考虑光照影响的材质，用于创建安旦的不光亮物体 */
+	/* 网格Lambert材质：考虑光照影响的材质，用于创建暗淡的不光亮物体 */
 
     // once everything is loaded, we run our Three.js stuff.
     function init() {
@@ -63,7 +63,6 @@
         var cubeGeometry = new THREE.BoxGeometry(15, 15, 15);
         var planeGeometry = new THREE.PlaneGeometry(14, 14, 4, 4);
 
-
         var meshMaterial = new THREE.MeshLambertMaterial({color: 0x7777ff});
         var sphere = new THREE.Mesh(sphereGeometry, meshMaterial);
         var cube = new THREE.Mesh(cubeGeometry, meshMaterial);
@@ -74,10 +73,8 @@
         sphere.position.y = 3;
         sphere.position.z = 2;
 
-
         cube.position = sphere.position;
         plane.position = sphere.position;
-
 
         // add the sphere to the scene
         scene.add(cube);
@@ -112,18 +109,24 @@
             this.transparent = meshMaterial.transparent;
             this.overdraw = meshMaterial.overdraw;
             this.visible = meshMaterial.visible;
+			
+			// 材质发射的颜色， 默认值是黑色
             this.emissive = meshMaterial.emissive.getHex();
-            this.ambient = meshMaterial.ambient.getHex();
+            // 环境色： 材质的环境色，和环境光源一起使用。这个颜色会与环境光提供的颜色相乘，默认值是白色
+			this.ambient = meshMaterial.ambient.getHex();
             this.side = "front";
 
             this.color = meshMaterial.color.getStyle();
+			
+			/* true： 启用半lambert光照技术，光下降的更微妙 */
             this.wrapAround = false;
+			
+			/* 当wrapAround为true时，可以来控制光下降的速度 */
             this.wrapR = 1;
             this.wrapG = 1;
             this.wrapB = 1;
 
             this.selectedMesh = "cube";
-
         };
 
         var gui = new dat.GUI();

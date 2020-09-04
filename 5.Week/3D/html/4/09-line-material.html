@@ -4,9 +4,9 @@
 
 <head>
     <title>Example 04.09 - Linematerial</title>
-    <script type="text/javascript" src="../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/three.js"></script>
 
-    <script type="text/javascript" src="../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
     <style>
         body {
             /* set margin to 0 and overflow to hidden, to go fullscreen */
@@ -26,6 +26,14 @@
 <!-- Javascript code that runs our Three.js examples -->
 <script type="text/javascript">
 	/* 直线基础材质：可以用于THREE.Line直线几何体，用来创建着色的直线 */
+	/* 属性： 
+		color: 线段颜色， 如果指定了vertexColors，这个属性就会被忽略
+		linewidth
+		linecap: 定义了线框模式下顶点间线段的端点如何显示--butt(平)， round()圆，square(方)， 默认为round
+		linejoin: 定义了线段的连接点如何显示--round， bevel(斜角)， miter(尖角)
+		vertexColors
+		fog
+	 */
 
     // once everything is loaded, we run our Three.js stuff.
     function init() {
@@ -62,7 +70,8 @@
         spotLight.castShadow = true;
         scene.add(spotLight);
 
-        // get the turtle
+        // get the turtle 
+		// 返回一个gosper曲线
         var points = gosper(4, 60);
 
 
@@ -72,6 +81,8 @@
         points.forEach(function (e) {
             lines.vertices.push(new THREE.Vector3(e.x, e.z, e.y));
             colors[i] = new THREE.Color(0xffffff);
+			
+			/* setHSL()设置颜色，需要提供色调hue， 饱和度saturation和亮度lightness */
             colors[i].setHSL(e.x / 100 + 0.5, (  e.y * 20 ) / 300, 0.8);
             i++;
         });

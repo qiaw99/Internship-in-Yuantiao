@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
     <title>Example 04.01 - MeshBasicMaterial</title>
     <script type="text/javascript" src="../../libs/three.js"></script>
@@ -76,7 +74,6 @@
         cube.position = sphere.position;
         plane.position = sphere.position;
 
-
         // add the sphere to the scene
         scene.add(cube);
 
@@ -111,11 +108,21 @@
             this.transparent = meshMaterial.transparent;
             this.overdraw = meshMaterial.overdraw;
             this.visible = meshMaterial.visible;
+			
+			/* 设置哪一面应用材质 */
             this.side = "front";
 
             this.color = meshMaterial.color.getStyle();
+			
+			/* 线框 */
             this.wireframe = meshMaterial.wireframe;
-            this.wireframeLinewidth = meshMaterial.wireframeLinewidth;
+            
+			/* 线框线宽 */
+			this.wireframeLinewidth = meshMaterial.wireframeLinewidth;
+			
+			//wireframeLinecap: 线框线段端点
+			
+			/* 线框线段连接点 */
             this.wireFrameLineJoin = meshMaterial.wireframeLinejoin;
 
             this.selectedMesh = "cube";
@@ -134,7 +141,6 @@
         };
 
         var gui = new dat.GUI();
-
 
         var spGui = gui.addFolder("Mesh");
         spGui.add(controls, 'opacity', 0, 1).onChange(function (e) {
@@ -193,6 +199,7 @@
         });
 
         gui.add(controls, 'switchRenderer');
+		
         var cvGui = gui.addFolder("Canvas renderer");
         cvGui.add(controls, 'overdraw').onChange(function (e) {
             meshMaterial.overdraw = e

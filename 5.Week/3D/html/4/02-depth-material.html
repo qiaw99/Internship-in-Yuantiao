@@ -4,10 +4,10 @@
 
 <head>
     <title>Example 04.02 - Depth Material</title>
-    <script type="text/javascript" src="../libs/three.js"></script>
+    <script type="text/javascript" src="../../libs/three.js"></script>
 
-    <script type="text/javascript" src="../libs/stats.js"></script>
-    <script type="text/javascript" src="../libs/dat.gui.js"></script>
+    <script type="text/javascript" src="../../libs/stats.js"></script>
+    <script type="text/javascript" src="../../libs/dat.gui.js"></script>
     <style>
         body {
             /* set margin to 0 and overflow to hidden, to go fullscreen */
@@ -27,6 +27,11 @@
 <!-- Javascript code that runs our Three.js examples -->
 <script type="text/javascript">
 	/* 网格深度材质： 使用从摄像机到网格的距离来决定如何给网格上色 */
+	/* 这种材质的物体其外观不是由光照或者某个材质属性决定的，而是由物体到摄像机的距离决定的 */
+	/* 控制线框的显示属性： 
+			wireframe: 指定是否显示线框
+			wireframeLineWidth: 指定线框线的宽度
+	 */
 
     // once everything is loaded, we run our Three.js stuff.
     function init() {
@@ -35,6 +40,8 @@
 
         // create a scene, that will hold all our elements such as objects, cameras and lights.
         var scene = new THREE.Scene();
+		
+		/* 让所用都使用该种材质 */
         scene.overrideMaterial = new THREE.MeshDepthMaterial();
 
         // create a camera, which defines where we're looking at.
@@ -113,7 +120,6 @@
             controls.addCube();
             i++;
         }
-
 
         render();
 
