@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../lib/cuin-utils.js"></script>
+		<script src="../lib/cuon-matrix.js"></script>
+		<script src="../lib/webgl-debug.js"></script>
+		<script src="../lib/webgl-utils.js"></script>
+		<style>
+			body {
+				margin-top: 40px;
+				margin-left: 500px;
+			   /* overflow: hidden; */
+			}
+		</style>
+	</head>
+	<body onload='main()'>
+		<canvas id="webgl" width="1000" height="1000">test</canvas>
+		<script type="text/javascript">
+			/* 顶点着色器 */
+			/* gl_PointSize--float 默认是1.0 */
+			var VSHADER_SOURCE = 
+				'void main(){\n' + 
+				'	gl_Position = vec4(0.5, -0.5, 0.0, 1.0); \n' + 
+				'	gl_PointSize = 100.0; \n' + 
+				'}\n';
+				
+			/* 片段着色器 */
+			/* 采用RGBA值 */
+			var FSHADER_SOURCE = 
+				'void main(){\n' + 
+				'	gl_FragColor = vec4(0.0, 0.5, 0.5, 1.0); \n' +
+				'}\n';
+			
+			window.onload = function main(){
+				var canvas = document.getElementById("webgl");
+				var gl = getWebGLContext(canvas);
+				
+				if(!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)){
+					alert('failed to init')
+				}
+				
+				//指定颜色 r,g,b,a
+				gl.clearColor(0.0, 0.0, 0.0, 1.0);
+				//设置背景色 清空缓冲区
+				gl.clear(gl.COLOR_BUFFER_BIT);
+				
+				/* drawArrays(mode, first, count)
+					mode: gl.POINTS, gl.LINES, gl.LINE_STRIP, gl.LINE_LOOP, gl.TRIANGLE, gl.TRIANGLE_STRIP, gl.TRIANGLE_FAN
+					first: int 从哪个顶点开始绘制
+					count: int 绘制需要多少顶点
+				*/
+				gl.drawArrays(gl.POINTS, 0, 1);
+			}
+		</script>
+	</body>
+</html>
