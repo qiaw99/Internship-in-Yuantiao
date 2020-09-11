@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - postprocessing - unreal bloom</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+
+		<div id="container"></div>
+
+		<div id="info">
+			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - Bloom pass by <a href="http://eduperiment.com" target="_blank" rel="noopener">Prashant Sharma</a> and <a href="https://clara.io" target="_blank" rel="noopener">Ben Houston</a>
+			<p>
+				This Bloom Pass is inspired by the bloom pass of the Unreal Engine. It creates a mip map chain of bloom textures and blur them
+				with different radii.<br /> Because of the weigted combination of mips, and since larger blurs are done on higher mips, this bloom
+				is better in quality and performance.
+			</p>
+			Model: <a href="https://blog.sketchfab.com/art-spotlight-primary-ion-drive/" target="_blank" rel="noopener">Primary Ion Drive</a> by
+			<a href="http://mjmurdock.com/" target="_blank" rel="noopener">Mike Murdock</a>, CC Attribution.
+		</div>
+		<!-- <script type="x-shader/x-fragment" id="fragmentShader">
+			uniform sampler2D texture1;
+			
+			varying vec2 vUv;
+		
+			void main(void){
+				gl_FragColor = texture2D( texture1, vUv);
+			}
+		</script>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+			varying vec2 vUv;
+	
+			void main() {
+				vUv = uv;
+				gl_Position =   projectionMatrix * 
+								modelViewMatrix * 
+								vec4(position,1.0);
+			}
+		</script> -->
+
+		<script type="x-shader/x-vertex" id="vertexshader">
+
+			varying vec2 vUv;
+
+			void main() {
+
+				vUv = uv;
+
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform sampler2D baseTexture;
+			uniform sampler2D bloomTexture;
+
+			varying vec2 vUv;
+
+			vec4 getTexture( sampler2D texelToLinearTexture ) {
+
+				return mapTexelToLinear( texture2D( texelToLinearTexture , vUv ) );
+
+			}
+
+			void main() {
+
+				gl_FragColor = ( getTexture( baseTexture ) + vec4( 1.0 ) * getTexture( bloomTexture ) );
+
+			}
+
+		</script>
+
+		<script type="module">
+
+			import * as THREE from '../build/three.module.js';
+
+			import Stats from './jsm/libs/stats.module.js';
+			import { GUI } from './jsm/libs/dat.gui.module.js';
+
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+			import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
+			import { RenderPass } from './jsm/postprocessing/RenderPass.js';
+			import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
+			import { Line2 } from './jsm/lines/Line2.js';
+			import { LineMaterial } from './jsm/lines/LineMaterial.js';
+			import { LineGeometry } from './jsm/lines/LineGeometry.js';
+			import { LineSegments2 } from './jsm/lines/LineSegments2.js';
+			import { GeometryUtils } from './jsm/utils/GeometryUtils.js';
+
+            var params = {
+				exposure: 1,
+				bloomStrength: 1.5,
+				bloomThreshold: 0,
+				bloomRadius: 0,
+				width:0.1
+			};
+
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(60, window.innerWidth/ window.innerHeight, 1, 10000);
+            camera.position.set(-5, 5, 5);
+            camera.layers.enable(1);
+            var renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor( 0x101000 );
+            document.body.appendChild(renderer.domElement);
+
+            var controls = new OrbitControls(camera, renderer.domElement);
+
+            var light = new THREE.DirectionalLight(0xffffff, 0.75);
+            light.position.setScalar(100);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+
+            var obj = new THREE.Mesh(new THREE.PlaneGeometry(12, 5), new THREE.MeshLambertMaterial({color: "red", wireframe: false}));
+            obj.position.z = 0.25;
+            obj.layers.enable(1);
+            scene.add(obj);
+
+            var objBack = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 1), new THREE.MeshBasicMaterial({color: "red", wireframe: false}));
+            objBack.position.z = -2.25;
+            objBack.layers.enable(1);
+            scene.add(objBack);
+
+            /** COMPOSER */
+            var renderScene = new RenderPass( scene, camera )
+                
+            //effectFXAA = new THREE.ShaderPass( THREE.FXAAShader )
+            //effectFXAA.uniforms.resolution.value.set( 1 / window.innerWidth, 1 / window.innerHeight )
+                
+            var bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 )
+            bloomPass.threshold = params.bloomThreshold;
+			bloomPass.strength = params.bloomStrength;
+			bloomPass.radius = params.bloomRadius;
+
+            // bloomPass.threshold = 0.2
+            // bloomPass.strength = 1.2
+            // bloomPass.radius = 0.55
+            bloomPass.renderToScreen = true
+                
+            var composer = new EffectComposer( renderer )
+            composer.setSize( window.innerWidth, window.innerHeight )
+                
+            composer.addPass( renderScene )
+            //composer.addPass( effectFXAA )
+            composer.addPass( bloomPass )
+                
+            renderer.gammaInput = true
+            renderer.gammaOutput = true
+            renderer.toneMappingExposure = Math.pow( 0.9, 4.0 ) 
+
+            var gui = new GUI();
+
+            gui.add( params, 'exposure', 0.1, 1.0 ).step(0.001).onChange( function ( value ) {
+
+                renderer.toneMappingExposure = Math.pow( value, 4.0 );
+
+            } );
+
+            gui.add( params, 'bloomThreshold', 0.0, 2.0 ).step(0.1).onChange( function ( value ) {
+
+                bloomPass.threshold = Number( value );
+
+            } );
+
+            gui.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
+
+                bloomPass.strength = Number( value );
+
+            } );
+
+            gui.add( params, 'bloomRadius', 0.0, 2.0 ).step( 0.01 ).onChange( function ( value ) {
+
+                bloomPass.radius = Number( value );
+
+            } );
+            // gui.add( params, 'width', 0.001, 0.01 ).step(0.001).onChange( function ( val ) {
+
+            //     matLine.linewidth = val;
+
+            // } );
+            window.onresize = function () {
+
+                var width = window.innerWidth;
+                var height = window.innerHeight;
+
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( width, height );
+                //renderer1.setSize( width, height );
+                composer.setSize( width, height );
+                //mapcomposer.setSize( width, height );
+            };
+            render();
+
+            function render(){
+            requestAnimationFrame(render);
+                 
+            renderer.autoClear = false;
+            renderer.clear();
+            
+            //camera.layers.set(1);
+            composer.render();
+            
+            renderer.clearDepth();
+            //camera.layers.set(0);
+            //renderer.render(scene, camera);
+            }
+		</script>
+
+</body>
+
+</html>

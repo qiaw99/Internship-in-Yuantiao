@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/three.js/r83/three.js"></script>
+</head>
+<body>
+
+<script>
+    console.log(THREE)
+    var container, camera, scene, renderer, particles = [], material, map, textureLoader;
+    var halfX = window.innerWidth / 2;
+    var halfY = window.innerHeight / 2;
+    var mouseX = 0, mouseY = 0;
+    var fallSpeen = 2;
+    var amount = 1000;
+
+    // 返回一个范围内内的随机数
+    function randomRange(min, max) {
+        return ((Math.random() * (max - min)) + min);
+    }
+    
+    function init() {
+        container = document.createElement('div');
+        document.body.appendChild(container);
+        // 相机
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+        camera.position.z = 100;
+        // 场景
+        scene = new THREE.Scene();
+        // 纹理，应用于一个表面，或者作为一个反射或折射贴图。
+        textureLoader = new THREE.TextureLoader();
+        map  = textureLoader.load('map.jpg');
+        // 传入纹理，得到材料
+        material = new THREE.SpriteMaterial({map: map});
+        for ( i = 0; i < amount; i ++ ){
+            // 精灵平面
+            var particle = new THREE.Sprite( material );
+            var randomScale = randomRange(20,40)
+
+            particle.position.x = randomRange(-1000, 800);
+            particle.position.y = randomRange(-1000, 1200);
+            particle.position.z = randomRange(-1000, 1000);
+            particle.scale.x = particle.scale.y = particle.scale.z = randomScale;
+            particle.v = new THREE.Vector3(0, -fallSpeen, 0);
+            particle.v.z = (1 * randomRange(-1, 1));
+            particle.v.x = (1 * randomRange(-1, 1));
+
+            particles.push(particle);
+            scene.add( particle );
+        }
+
+        renderer = new THREE.WebGLRenderer({alpha: true});
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // renderer.domElement 就是canvas
+        container.appendChild(renderer.domElement);
+        animate();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        render();
+    }
+
+    function render() {
+        for(var i = 0; i < particles.length; i++){
+            var particle = particles[i];
+            var pp = particle.position;
+
+            pp.add(particle.v);
+            // 调整位置，从左边出去的，从右边回来
+            if(pp.y < -1000) pp.y = 1000;
+            if(pp.x > 1000) pp.x = -1000;
+            else if(pp.x < -1000) pp.x = 1000;
+            if(pp.z > 1000) pp.z=-1000;
+            else if(pp.z < -1000) pp.z = 1000;
+        }
+
+        // 重新渲染
+        renderer.render( scene, camera );
+    }
+
+    init()
+</script>
+</body>
+</html>

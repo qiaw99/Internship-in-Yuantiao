@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Vertices For Geometry</title>
+    <script src="../build/three.js"></script>
+    <script src="./js/libs/stats.js"></script>
+    <script src="./js/utils/SceneUtils.js"></script>
+    <script src="./js/shaders/CopyShader.js"></script>
+</head>
+<body>
+
+    <script type="x-shader/x-vertex" id="wavevertexshader">
+
+        varying vec3 vp;
+        void main(){
+           vp = position; 
+           gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+
+    </script>
+
+    <script type="x-shader/x-fragment" id="wavefragmentshader">
+    
+        varying vec3 vp;
+        uniform vec3 u_color;
+        uniform vec3 u_tcolor;
+
+        float getDis(float x, float z){
+            return  sqrt((x-0.0)*(x-0.0)+(z-0.0)*(z-0.0));
+        }
+        void main(){ 
+            if(vp.y >= 0.95 || vp.y <= -0.95){
+                gl_FragColor = vec4(u_tcolor, 0.0);
+            } 
+            else {
+                float uOpacity = 1.0-vp.y;
+                float alpha = 2.0-getDis(vp.x,vp.z);
+                gl_FragColor = vec4(u_tcolor, uOpacity*alpha);
+            } 
+        }
+
+    </script>
+
+
+    <script type="x-shader/x-vertex" id="planevertexshader">
+
+        varying vec3 vp;
+        void main(){
+           vp = position; 
+           gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+
+    </script>
+
+    <script type="x-shader/x-fragment" id="planefragmentshader">
+    
+        varying vec3 vp;
+        uniform vec3 u_color;
+        uniform vec3 u_tcolor;
+        uniform float u_r;
+        uniform float delta;
+
+
+        float getDis(float x, float y){
+            return  sqrt((x-5.0)*(x-5.0)+(y-5.0)*(y-5.0));
+        }
+        void main(){ 
+            float uOpacity = 0.3; 
+            vec3 vColor = u_color;
+            float uLength = getDis(vp.x,vp.y);
+
+            if(uLength >= u_r && uLength <= u_r + delta){
+                float opacity = 2.0-uLength;
+                gl_FragColor = vec4(u_tcolor,opacity);
+            } else {
+                gl_FragColor = vec4(u_color,uOpacity);
+            }
+           
+        }
+
+    </script>
+
+<script type="module">
+    import { OrbitControls } from './jsm/controls/OrbitControls.js';
+    import { GUI } from './jsm/libs/dat.gui.module.js';
+    import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
+    import { RenderPass } from './jsm/postprocessing/RenderPass.js';
+    
+    import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
+    import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
+    import { Line2 } from './jsm/lines/Line2.js';
+    import { LineMaterial } from './jsm/lines/LineMaterial.js';
+    import { LineGeometry } from './jsm/lines/LineGeometry.js';
+    import { LineSegments2 } from './jsm/lines/LineSegments2.js';
+    import { GeometryUtils } from './jsm/utils/GeometryUtils.js';
+    let renderer, camera, scene, scene2, renderer2;
+    let controller;
+    var uniforms =  {
+		time: { value: 0.1 },
+    };
+    //let controls;
+    let vertices, vertices2, vertices3, vertices4;
+    let faces, faces2, faces3, faces4;
+    let controlPoints = [];
+    var geom, geom2, geom3, geom4;
+    let mesh, mesh2, mesh3, mesh4;
+    var matLine;
+    var texture_up;
+    var renderScene, bloomComposer, bloomComposer2, bloomPass, renderScene2;
+    var geometry, cylinder;
+    var waveMaterial, planeMaterial;
+    var material;
+    
+    var params = {
+        exposure: 1.5,
+        bloomStrength: 2.3,
+        bloomThreshold: 0.47,
+        bloomRadius: 0.2,
+        width:0.007
+    };
+
+
+    //初始化渲染器
+    function initThree() {
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });//定义渲染器
+        renderer.setSize(window.innerWidth, window.innerHeight);//设置渲染的宽度和高度
+        document.body.appendChild(renderer.domElement);//将渲染器加在html中的div里面
+        renderer.setClearColor(0x000000, 1.0);//渲染的颜色设置
+
+        renderer2 = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha:true
+        });//定义渲染器
+        renderer2.setSize(window.innerWidth, window.innerHeight);//设置渲染的宽度和高度
+        document.body.appendChild(renderer2.domElement);//将渲染器加在html中的div里面
+
+        // renderer.shadowMapEnabled = true;//开启阴影，默认是关闭的，太影响性能
+        // renderer.shadowMapType = THREE.PCFSoftShadowMap;//阴影的一个类型
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);//perspective是透视摄像机，这种摄像机看上去画面有3D效果
+        //摄像机的位置
+        camera.position.x = 10;
+        camera.position.y = 15;
+        camera.position.z = 15;
+        camera.up.x = 0;
+        camera.up.y = 1;//摄像机的上方向是Y轴
+        camera.up.z = 0;
+        camera.lookAt(0, 0, 0);//摄像机对焦的位置
+        //这三个参数共同作用才能决定画面
+        
+        scene = new THREE.Scene();
+
+        var light = new THREE.AmbientLight(0xffffff, 1);//环境光，如果不加，点光源照不到的地方就完全是黑色的
+        scene.add(light);
+        //scene2.add(light);
+        controller = new OrbitControls(camera, renderer.domElement);
+        controller.target = new THREE.Vector3(0, 0, 0);
+        var axesHelper = new THREE.AxesHelper( 150 );
+        axesHelper.position.x = 0
+        axesHelper.position.y = 0
+        scene.add( axesHelper );
+    }
+
+
+    function ground(){
+        waveMaterial = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById( 'wavevertexshader' ).textContent,
+            fragmentShader: document.getElementById( 'wavefragmentshader' ).textContent,
+            side: THREE.DoubleSide,
+            uniforms: {
+                u_color: { value: new THREE.Color("#000000") },
+                u_tcolor: { value: new THREE.Color("#ff8000") },
+                
+            },
+            transparent: true,
+            depthWrite: false,
+        });
+
+        planeMaterial = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById( 'planevertexshader' ).textContent,
+            fragmentShader: document.getElementById( 'planefragmentshader' ).textContent,
+            side: THREE.DoubleSide,
+            uniforms: {
+                u_color: { value: new THREE.Color("#000000") },
+                u_tcolor: { value: new THREE.Color("#ff8000") },
+                u_r: { value: 0.2 },
+                delta: { value: 1},
+            },
+            transparent: true,
+            depthWrite: false,
+        });
+
+        var planevertices = [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 50, 0),
+            new THREE.Vector3(50, 50, 0),
+            new THREE.Vector3(50, 0, 0)
+        ];//顶点坐标，一共8个顶点
+        var planefaces = [
+             new THREE.Face3(0, 2, 3),
+             new THREE.Face3(0, 1, 2),
+        ];//顶点索引，每一个面都会根据顶点索引的顺序去绘制线条
+        var planegeom = new THREE.Geometry();
+        planegeom.vertices = planevertices;
+        planegeom.faces = planefaces;
+        //var planegeom = new THREE.PlaneGeometry(300,20);
+        var material1 =  //[
+            //new THREE.MeshLambertMaterial({color:0x000000, side:THREE.DoubleSide, transparent:true, opacity:1.0}),
+            waveMaterial
+        //] 
+        // SceneUtils.createMultiMaterialObject
+        var mesh1 = new THREE.Mesh( planegeom, planeMaterial);
+        mesh1.position.set(0,0,0);
+        mesh1.rotation.x += 1.5;
+        mesh1.translateY(-5)
+        mesh1.translateX(-5)
+        console.log(mesh1.position)
+        scene.add(mesh1);
+
+        geometry = new THREE.CylinderGeometry( 0.2, 0.2, 20, 64 );
+        material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        cylinder = new THREE.Mesh( geometry, waveMaterial );
+        cylinder.name = "cn";
+        cylinder.position.x = 0;
+        cylinder.position.y = 1;
+        cylinder.position.z = 0;
+        scene.add( cylinder );
+
+    }
+
+    //可视化面板
+    function initDat() {
+        
+        var gui = new GUI();
+        gui.add( params, 'exposure', 0.1, 3.0 ).step(0.1).onChange( function ( value ) {
+            renderer.toneMappingExposure = Math.pow( value, 4.0 );
+        } );
+
+        gui.add( params, 'bloomThreshold', 0.0, 1.0 ).step(0.01).onChange( function ( value ) {
+            bloomPass.threshold = Number( value );
+        } );
+
+        gui.add( params, 'bloomStrength', 0.0, 10.0 ).onChange( function ( value ) {
+            bloomPass.strength = Number( value );
+        } );
+
+        gui.add( params, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
+            bloomPass.radius = Number( value );
+        } );
+
+    }
+
+ //动画
+    var clock = new THREE.Clock();
+    var radius = 0.2
+    function render() {
+        scene.remove(scene.getObjectByName("cn"));
+
+        geometry = new THREE.CylinderGeometry( radius, radius, 20, 64 );
+        radius += 0.01;
+        if(radius >= 5)
+            radius = 0.2;
+        cylinder = new THREE.Mesh( geometry, waveMaterial );
+        cylinder.name = "cn";
+        cylinder.position.x = 0;
+        cylinder.position.y = 1;
+        cylinder.position.z = 0;
+        scene.add(cylinder);
+
+        planeMaterial.uniforms.u_r.value += 0.01;
+        // console.log(clock.getDelta());
+        // console.log(waveMaterial.uniforms.u_r.value);
+        if (planeMaterial.uniforms.u_r.value >= 5) {
+            planeMaterial.uniforms.u_r.value = 0.2
+        }
+        requestAnimationFrame(render);
+        
+        bloomComposer.render();
+
+    }
+    //主函数
+    function threeStart() {
+        initThree();
+        ground();
+       
+        renderScene = new RenderPass( scene, camera );
+        renderScene.renderToScreen = true
+        renderScene.clear = true
+        // renderScene.needsSwap = false
+
+
+        bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), params.bloomStrength, params.bloomRadius, params.bloomThreshold );
+        bloomPass.threshold = params.bloomThreshold;
+        bloomPass.strength = params.bloomStrength;
+        bloomPass.radius = params.bloomRadius;
+    
+
+        // var copyPass = new ShaderPass( THREE.CopyShader );
+
+        bloomComposer = new EffectComposer( renderer );
+        bloomComposer.renderToScreen = true;
+
+        bloomComposer.addPass( renderScene );
+        bloomComposer.addPass( bloomPass );
+        
+        initDat()
+        render();
+    }
+    threeStart()
+</script>
+</body>
+</html>

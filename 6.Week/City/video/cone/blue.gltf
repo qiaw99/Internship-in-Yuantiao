@@ -1,0 +1,154 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.0.5",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0,
+                1,
+                2
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "name" : "Light",
+            "rotation" : [
+                0.16907575726509094,
+                0.7558803558349609,
+                -0.27217137813568115,
+                0.570947527885437
+            ],
+            "translation" : [
+                4.076245307922363,
+                5.903861999511719,
+                -1.0054539442062378
+            ]
+        },
+        {
+            "name" : "Camera",
+            "rotation" : [
+                0.483536034822464,
+                0.33687159419059753,
+                -0.20870360732078552,
+                0.7804827094078064
+            ],
+            "translation" : [
+                7.358891487121582,
+                4.958309173583984,
+                6.925790786743164
+            ]
+        },
+        {
+            "mesh" : 0,
+            "name" : "dingwei",
+            "rotation" : [
+                0.7071068286895752,
+                0,
+                0,
+                0.7071067094802856
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "alphaMode" : "BLEND",
+            "doubleSided" : true,
+            "name" : "default",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0,
+                    1,
+                    0.8000838160514832,
+                    1
+                ],
+                "metallicFactor" : 1,
+                "roughnessFactor" : 0.7642977237701416
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "dingwei",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 26,
+            "max" : [
+                8.389413833618164,
+                0,
+                0
+            ],
+            "min" : [
+                -8.389413833618164,
+                -3.7648725509643555,
+                -20.96987533569336
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 26,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 26,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 42,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 312,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 312,
+            "byteOffset" : 312
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 208,
+            "byteOffset" : 624
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 84,
+            "byteOffset" : 832
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 916,
+            "uri" : "data:application/octet-stream;base64,CjsGwazz8L9OwqfBCjsGwQbzJMBOwqfBAAAAAKzz8L8AAACACjsGwU0BmL9OwqfBAAAAAKzz8L8AAACACjsGQQbzJMBOwqfBCjsGQazz8L9OwqfBCjsGQU0BmL9OwqfBCjsGQU0BmL9OwqfB3CQ0qAAAAACWkY7BAAAAAKzz8L8AAACACjsGwU0BmL9OwqfBAAAAAKzz8L8AAACA3CQ0qKzzcMCWkY7BCjsGQQbzJMBOwqfBCjsGwQbzJMBOwqfBCjsGQQbzJMBOwqfB3CQ0qKzzcMCWkY7B3CQ0qAAAAACWkY7BCjsGQazz8L9OwqfBCjsGQU0BmL9OwqfB3CQ0qAAAAACWkY7B3CQ0qKzzcMCWkY7BCjsGwQbzJMBOwqfBCjsGwazz8L9OwqfBCjsGwU0BmL9OwqfBNK9tvyguvr4AALC1wa9tv2krvr4Aaru3qa5tv98wvr4AjqI3vK9tv34rvr4AgLW3oq5tPwAxvr4AYKo3wa9tP2crvr4AQLu3NK9tPykuvr4AAKy1va9tP34rvr4AsrW3WI41PoK5073djHo/AGB0uNon171XlX4/APCvODwR172llX4/aI41voa5073cjHo/AIBEtwYZ172KlX6/AMAcuCAc172AlX6/Vpk1Pga1071sjHq/bpk1vv60071qjHq/d+azvkStbz8AMAE3g+2zvvGrbz8A8Oo3KOWzvoStbz8AgIg29vQ2PywPODiUDzO/PeWzvn+tbz8AwIw2HOWzPoWtbz8AgIQ2eu2zPvSrbz8AIOo3dOazPkWtbz8AoAA34uOzPsCtbz8AAOg0OeWzPoGtbz8AIIs2tUZ7PwAA+DlsjXY/AAD4ObVGez8AAIA/AACAPwAA+DlrjXY/AACAP2uNdj8AAAAAs9RxPwDkdzr7G20/AOr3OgAAAAAwRDk/wShyPj4EPT/7vNM+ANISO/e80z4AAIA/+rxTPwAAgD+uaCY/KB2HPvu80z48nY4++bxTPwDREjvptlU/CiafPvm8Uz/CIB0//BttPz6GFz+4ZVo/fBSdPocUXz/wAps+/BttPz6GFz/5vFM/wiAdP12+Yz8AAIA/LW1oPzn3fj/8G20/c+59PwAAAQACAAMAAAACAAQABQAGAAcABAAGAAgACQAKAAkACwAKAAwADQAOAAwADwANABAAEQASABMAEAASABQAEwASABUAFgAXABUAFwAYABUAGAAZAA=="
+        }
+    ]
+}

@@ -1,0 +1,147 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.0.5",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0,
+                1,
+                2
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "name" : "Light",
+            "rotation" : [
+                0.16907575726509094,
+                0.7558803558349609,
+                -0.27217137813568115,
+                0.570947527885437
+            ],
+            "translation" : [
+                4.076245307922363,
+                5.903861999511719,
+                -1.0054539442062378
+            ]
+        },
+        {
+            "name" : "Camera",
+            "rotation" : [
+                0.483536034822464,
+                0.33687159419059753,
+                -0.20870360732078552,
+                0.7804827094078064
+            ],
+            "translation" : [
+                7.358891487121582,
+                4.958309173583984,
+                6.925790786743164
+            ]
+        },
+        {
+            "mesh" : 0,
+            "name" : "dingwei"
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "default",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 1
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "dingwei",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 26,
+            "max" : [
+                8.389413833618164,
+                3.029716968536377,
+                1.8824362754821777
+            ],
+            "min" : [
+                -8.389413833618164,
+                -17.94015884399414,
+                -1.8824362754821777
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 26,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 26,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 42,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 312,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 312,
+            "byteOffset" : 312
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 208,
+            "byteOffset" : 624
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 84,
+            "byteOffset" : 832
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 916,
+            "uri" : "data:application/octet-stream;base64,CjsGQeLmQUC/5DG/3CQ0qNvb872s8/C/3CQ0qNvb872s8/A/CjsGQeLmQUC/5DE/CjsGQeLmQUAAAAAACjsGweLmQUC/5DE/3CQ0qNvb872s8/A/3CQ0qNvb872s8/C/CjsGweLmQUC/5DG/CjsGweLmQUAAAAAACjsGweLmQUC/5DG/AAAAgHKFj8EAAAAACjsGweLmQUC/5DE/CjsGweLmQUAAAAAACjsGQeLmQUC/5DE/AAAAgHKFj8EAAAAACjsGQeLmQUC/5DG/CjsGQeLmQUAAAAAACjsGQeLmQUC/5DE/3CQ0qNvb872s8/A/AAAAgHKFj8EAAAAACjsGweLmQUC/5DE/AAAAgHKFj8EAAAAA3CQ0qNvb872s8/C/CjsGQeLmQUC/5DG/CjsGweLmQUC/5DG/1OmzvqOsbz8AAACA1OmzvqOsbz8AAACA1OmzvqOsbz8AAACA1OmzvqOsbz8AAACA9vQ2P5MPMz8sDzg41OmzPqOsbz8AAACA1OmzPqOsbz8AAACA1OmzPqOsbz8AAACA1OmzPqOsbz8AAACA1OmzPqOsbz8AAACAL69tvzwuvr4AAACAL69tvzwuvr4AAACAL69tvzwuvr4AAACAL69tvzwuvr4AAACALq9tPzwuvr4AAACALq9tPzwuvr4AAACALq9tPzwuvr4AAACALq9tPzwuvr4AAACAdpg1PhG5071ojHo/5zIIMv8h171qlX4/Nh0oMgEi171rlX4/dZg1vhG5071ojHo/AAAAAAEi171rlX6/AAAAAP8h171qlX6/dpg1PhG5071ojHq/dpg1vhG5071ojHq/AAAAAAAAgD8pbxE+qqoqPylvET4AAAAAAAAAAAAAAAAAAAAAAAAAPylvkT4AAAAAKW8RPgAAAAApbxE+qqoqPylvkT4AAIA/KW+RPgAAAD8pb5E+AACAP8pbJD8AAIA+KW+RPgAAAAApb5E+AAAAPwAAgD8AAAAAylskPwAAgD4AAIA/AACAPwAAgD8AAAA/8tVMPwAAAADy1cw+8MIZPvLVzD4AAIA/AAAAAAAAAADy1cw+AACAP/LVzD7wwhk+8tVMPwAAAAAAAAAAAAAAAAAAAQACAAAAAgADAAQAAAADAAUABgAHAAUABwAIAAkABQAIAAoACwAMAA0ACgAMAA4ADwAQABEADgAQABIAEwAUABMAFQAUABYAFwAYABYAGQAXAA=="
+        }
+    ]
+}

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>A simple demo</title>
+		<script src="../build/three.js"></script>
+		<script src="./js/libs/stats.js"></script>
+		<script src="./js/utils/SceneUtils.js"></script>
+		<script src="./js/shaders/CopyShader.js"></script>
+	</head>
+	<body>
+		<div id="Stats-output"></div>
+		
+		<script type="x-shader/x-vertex" id="vertexshader">
+		
+			varying vec2 vUv;
+		
+			void main() {
+		
+				vUv = uv;
+		
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		
+			}
+		
+		</script>
+		
+		<script type="x-shader/x-fragment" id="fragmentshader">
+		
+			uniform float time;
+			varying vec2 vUv;
+		
+			void main() {
+		
+				vec2 position = vUv;
+		
+				float red = abs( sin( position.x  + time / 5.0 ) );
+				float green = abs( sin( position.x + time / 4.0 ) );
+				float blue = abs( sin( position.x + time / 3.0 ) );
+				gl_FragColor = vec4( red, green, blue, 1.0 );
+		
+			}
+		
+		</script>
+		
+		<script type="x-shader/x-vertex" id="planevertexshader">
+		
+			varying vec3 vp;
+			void main(){
+			   vp = position; 
+			   gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+		
+		</script>
+		
+		<script type="x-shader/x-fragment" id="planefragmentshader">
+		
+			varying vec3 vp;
+			uniform vec3 u_color;
+			uniform vec3 u_tcolor;
+			uniform float u_r;
+			uniform float delta;
+			uniform vec2 center;
+		
+			float getDis(float x, float z){
+				return  sqrt((x-center.x)*(x-center.x)+(z-center.y)*(z-center.y));
+			}
+			
+			void main(){ 
+				float uOpacity = 0.3; 
+				//vec3 vColor = u_color;
+				float uLength = getDis(vp.x,vp.z);
+				
+				// delta:扩散的距离 u_r:最外围圆的半径
+				if(uLength <= u_r && uLength >= u_r - delta){
+					float opacity =  0.3 * (uLength - u_r + delta) / delta;
+					gl_FragColor = vec4(u_tcolor, opacity);
+				} else {
+					discard;
+				}       
+			}
+		</script>
+		
+		<script type="module">
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { GUI } from './jsm/libs/dat.gui.module.js';
+			import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
+			import { RenderPass } from './jsm/postprocessing/RenderPass.js';
+			
+			import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
+			import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
+			import { Line2 } from './jsm/lines/Line2.js';
+			import { LineMaterial } from './jsm/lines/LineMaterial.js';
+			import { LineGeometry } from './jsm/lines/LineGeometry.js';
+			import { LineSegments2 } from './jsm/lines/LineSegments2.js';
+			import { GeometryUtils } from './jsm/utils/GeometryUtils.js';
+			
+			var renderer;
+			var camera;
+			var scene;
+			var scene2;
+			var controller;
+			var stats;
+			var vertices;
+			var vertices2;
+			var vertices3;
+			var vertices4;
+			var faces;
+			var geom;
+			var geom2;
+			var geom3;
+			var geom4;
+			var mesh;
+			var mesh2;
+			var mesh3;
+			var mesh4;
+			var planeMaterial;
+			
+			var uniforms =  {
+				time: { value: 0.1 },
+			};
+			
+			function createBuilding() {
+			
+				vertices = [
+					new THREE.Vector3(1, 5, 1),
+					new THREE.Vector3(1, 5, -1),
+					new THREE.Vector3(1, 0, -1),
+					new THREE.Vector3(1, 0, 1),
+				   
+					new THREE.Vector3(-1, 5, 1),
+					new THREE.Vector3(-1, 5, -1),
+					new THREE.Vector3(-1, 0, -1),
+					new THREE.Vector3(-1, 0, 1)
+				];//顶点坐标，一共8个顶点
+				
+				faces = [
+					 new THREE.Face3(0, 2, 1),
+					 new THREE.Face3(2, 3, 0),//右
+					 new THREE.Face3(4, 6, 5),
+					 new THREE.Face3(6, 7, 4),//左
+					 new THREE.Face3(4, 1, 5),
+					 new THREE.Face3(1, 0, 4),//房顶
+					 new THREE.Face3(7, 2, 6),
+					 new THREE.Face3(2, 3, 7),//房底
+					 new THREE.Face3(5, 2, 1),
+					 new THREE.Face3(2, 6, 5),//后
+					 new THREE.Face3(4, 3, 0),
+					 new THREE.Face3(3, 7, 4),//前
+				];//顶点索引，每一个面都会根据顶点索引的顺序去绘制线条
+				
+				geom = new THREE.Geometry();
+				geom.vertices = vertices;
+				geom.faces = faces;
+				geom.computeFaceNormals();//计算法向量，会对光照产生影响
+				
+				var texture = new THREE.Texture();
+				var imgLoader = new THREE.ImageLoader();
+				imgLoader.load('http://localhost:8080/video/ny1.jpg', function(img)
+				{
+					texture.image = img;
+					texture.needsUpdate = true;
+				});
+				
+				var t0 = new THREE.Vector2(0, 0);//图片左下角
+				var t1 = new THREE.Vector2(0, 0.5);//
+				var t2 = new THREE.Vector2(0.125, 0);//
+				var t3 = new THREE.Vector2(0.5, 1);//
+				var t4 = new THREE.Vector2(0.5, 0.125);
+				var t5 = new THREE.Vector2(0.625, 0);
+				var t6 = new THREE.Vector2(0.5, 0);//
+				var t7 = new THREE.Vector2(0.625, 0.125);
+				var t8 = new THREE.Vector2(0.5, 0.5);
+				
+				var uv1 = [t1, t6, t8];
+				var uv2 = [t6, t0, t1];
+				var uv3 = [t6, t4, t5];
+				var uv4 = [t4, t7, t5]
+			
+				geom.faceVertexUvs[0].push(uv1, uv2, uv1, uv2, uv3, uv4, uv1, uv2, uv1, uv2, uv1, uv2);
+			
+				//两个材质放在一起使用
+				let materials = [
+					new THREE.MeshLambertMaterial({map:texture, side:THREE.DoubleSide}),
+				];
+			
+				//创建多材质对象，要引入SceneUtils.js文件，如果只有一个材质就不需要这个函数
+				mesh = new THREE.SceneUtils.createMultiMaterialObject(geom, materials);
+				mesh.children.forEach(function (e) {
+					e.castShadow = true
+				});
+			
+				// 增加图层对象与参数指定图层的对应关系
+				mesh.layers.enable(1);
+				scene.add(mesh)
+				
+				// 在fragmentshade中随着时间的改变，颜色也随之改变
+				var material = new THREE.ShaderMaterial( {
+					uniforms: uniforms,
+					vertexShader: document.getElementById( 'vertexshader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+					defines: {}
+				});
+				
+				var lineindex = [0, 1, 1, 2, 2, 3, 3, 0, 5, 6, 6, 7, 7, 4, 4, 5, 0, 4, 1, 5, 2, 6, 3, 7]
+				
+				/* 建筑上发光的line */
+				for(var i = 0; i < lineindex.length; i += 2){
+					var geometry = new THREE.Geometry();
+					geometry.vertices = []
+					geometry.vertices.push(vertices[lineindex[i]]);
+					geometry.vertices.push(vertices[lineindex[i+1]]);
+					var line = new THREE.Line(geometry,material);
+					scene.add(line);
+				}   
+			
+				vertices2 = [
+					new THREE.Vector3(2.5, 5, 3.5),
+					new THREE.Vector3(4.5, 5, 0),
+					new THREE.Vector3(6, 0, 0),
+					new THREE.Vector3(3, 0, 3),
+					new THREE.Vector3(-2, 5, 3),
+					new THREE.Vector3(0, 5, 0),
+					new THREE.Vector3(-3, 0, 0),
+					new THREE.Vector3(0, 0, 3)
+				];//顶点坐标，一共8个顶点
+				
+				geom2 = new THREE.Geometry();
+				geom2.vertices = vertices2;
+				geom2.faces = faces;
+				geom2.computeFaceNormals();//计算法向量，会对光照产生影响
+			
+				geom2.faceVertexUvs[0].push(uv1, uv2, uv1, uv2, uv3, uv4, uv1, uv2, uv1, uv2, uv1, uv2);
+			
+				//创建多材质对象，要引入SceneUtils.js文件，如果只有一个材质就不需要这个函数
+				mesh2 = new THREE.SceneUtils.createMultiMaterialObject(geom2, materials);
+				mesh2.children.forEach(function (e) {
+					e.castShadow = true
+				});
+				mesh2.translateX(2*4 + 3);
+				scene.add(mesh2)
+			  
+				for(var i = 0; i < lineindex.length; i += 2){
+						var geometry = new THREE.Geometry();
+						geometry.vertices = []
+						geometry.vertices.push(vertices2[lineindex[i]]);
+						geometry.vertices.push(vertices2[lineindex[i+1]]);
+						var line = new THREE.Line(geometry,material);
+						line.translateX(2*4 + 3);
+						scene.add(line);
+				}
+			
+				vertices3 = [
+					new THREE.Vector3(3, 5, 3),
+					new THREE.Vector3(3, 5, 0),
+					new THREE.Vector3(5, 0, 0),
+					new THREE.Vector3(3, 0, 3),
+					new THREE.Vector3(0, 7, 3),
+					new THREE.Vector3(0, 5, 0),
+					new THREE.Vector3(0, 0, 0),
+					new THREE.Vector3(0, 0, 3)
+				];//顶点坐标，一共8个顶点
+				
+				geom3 = new THREE.Geometry();
+				geom3.vertices = vertices3;
+				geom3.faces = faces;
+				geom3.computeFaceNormals();//计算法向量，会对光照产生影响
+			
+				geom3.faceVertexUvs[0].push(uv1,uv2,uv1,uv2,uv3,uv4,uv1,uv2,uv1,uv2,uv1,uv2);
+			
+				//创建多材质对象，要引入SceneUtils.js文件，如果只有一个材质就不需要这个函数
+				mesh3 = new THREE.SceneUtils.createMultiMaterialObject(geom3, materials);
+				mesh3.children.forEach(function (e) {
+					e.castShadow = true;
+				});
+				mesh3.translateZ(-2 * 8);
+				scene.add(mesh3);        
+			   
+				for(var i = 0; i < lineindex.length; i+=2){
+					
+					var geometry = new THREE.Geometry();
+					geometry.vertices = []
+					geometry.vertices.push(vertices3[lineindex[i]]);
+					geometry.vertices.push(vertices3[lineindex[i+1]]);
+					var line = new THREE.Line(geometry,material);
+					line.translateZ(-2 * 8);
+					scene.add(line); 
+				}
+			
+				vertices4 = [
+					new THREE.Vector3(3, 5, 3),
+					new THREE.Vector3(3, 5, 0),
+					new THREE.Vector3(3, 0, 0),
+					new THREE.Vector3(3, 0, 3),
+					new THREE.Vector3(0, 5, 3),
+					new THREE.Vector3(0, 5, 0),
+					new THREE.Vector3(0, 0, 0),
+					new THREE.Vector3(0, 0, 3)
+				];//顶点坐标，一共8个顶点
+				
+				geom4 = new THREE.Geometry();
+				geom4.vertices = vertices4;
+				geom4.faces = faces;
+				geom4.computeFaceNormals();//计算法向量，会对光照产生影响
+			
+				geom4.faceVertexUvs[0].push(uv1,uv2,uv1,uv2,uv3,uv4,uv1,uv2,uv1,uv2,uv1,uv2);
+			
+				//创建多材质对象，要引入SceneUtils.js文件，如果只有一个材质就不需要这个函数
+				mesh4 = new THREE.SceneUtils.createMultiMaterialObject(geom4, materials);
+				mesh4.children.forEach(function (e) {
+					e.castShadow = true
+				});
+				mesh4.translateX(2 * 4 + 3);
+				mesh4.translateZ(-2 * 8);
+				scene.add(mesh4);             
+			   
+				for(var i = 0; i < lineindex.length; i+=2){
+					var geometry = new THREE.Geometry();
+					geometry.vertices = []
+					geometry.vertices.push(vertices4[lineindex[i]]);
+					geometry.vertices.push(vertices4[lineindex[i+1]]);
+					var line = new THREE.Line(geometry,material);
+					line.translateX(2 * 4 + 3)
+					line.translateZ(-2 * 8);
+					scene.add(line);
+				}
+			
+			}
+			
+			function addCircle(){
+				planeMaterial = new THREE.ShaderMaterial({
+					vertexShader: document.getElementById( 'planevertexshader' ).textContent,
+					fragmentShader: document.getElementById( 'planefragmentshader' ).textContent,
+					side: THREE.DoubleSide,
+					uniforms: {
+						u_color: { value: new THREE.Color("#000000") },
+						u_tcolor: { value: new THREE.Color("#ff0000") },
+						u_r: { value: 0.2 },
+						delta: { value: 2},
+						center:{value:new THREE.Vector2(20.0, 20.0)}
+					},
+					transparent: true,
+					depthWrite: false,
+				});
+				
+				var planevertices = [
+					new THREE.Vector3(0, 0, 0),
+					new THREE.Vector3(0, 0, 200),
+					new THREE.Vector3(200, 0, 200),
+					new THREE.Vector3(200, 0, 0)
+				];//顶点坐标，一共8个顶点
+				var planefaces = [
+					 new THREE.Face3(0, 2, 3),
+					 new THREE.Face3(0, 1, 2),
+				];//顶点索引，每一个面都会根据顶点索引的顺序去绘制线条
+				
+				var planegeom = new THREE.Geometry();
+				planegeom.vertices = planevertices;
+				planegeom.faces = planefaces;
+				var material1 =  [
+					planeMaterial
+				] 
+				
+				var mesh1 = new THREE.SceneUtils.createMultiMaterialObject( planegeom, material1);
+				mesh1.position.set(-10, 0, -30);
+				scene.add(mesh1);
+			}
+			
+			function addPlane(){
+				
+				var planeGeometry = new THREE.PlaneGeometry(200, 100, 1, 1);
+				var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
+				var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+				plane.receiveShadow = true;
+				
+				// rotate and position the plane
+				plane.rotation.x = -0.5 * Math.PI;
+				
+				plane.position.x = 15;
+				plane.position.y = 0;
+				plane.position.z = -5;
+				
+				// add the plane to the scene
+				scene.add(plane);
+				
+				// create a cube
+				var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+				var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
+				var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+				cube.castShadow = true;
+				
+				// position the cube
+				cube.position.x = -4;
+				cube.position.y = 3;
+				cube.position.z = 0;
+				
+				// add the cube to the scene
+				scene.add(cube);	
+			}
+			
+			function initThree() {
+				stats = initStats();
+				
+				renderer = new THREE.WebGLRenderer({
+					antialias: true
+				});//定义渲染器
+				renderer.setSize(window.innerWidth, window.innerHeight);//设置渲染的宽度和高度
+				document.body.appendChild(renderer.domElement);//将渲染器加在html中的div里面
+				renderer.setClearColor(0x000000, 1.0);//渲染的颜色设置
+			
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);//perspective是透视摄像机，这种摄像机看上去画面有3D效果
+				//摄像机的位置
+				camera.position.x = 10;
+				camera.position.y = 15;
+				camera.position.z = 15;
+				camera.up.x = 0;
+				camera.up.y = 1;//摄像机的上方向是Y轴
+				camera.up.z = 0;
+				camera.lookAt(0, 0, 0);//摄像机对焦的位置
+				//这三个参数共同作用才能决定画面
+				
+				scene = new THREE.Scene();
+			
+				var light = new THREE.AmbientLight(0xffffff, 1);//环境光，如果不加，点光源照不到的地方就完全是黑色的
+				scene.add(light);
+				
+				//相机控件， 进行三维场景缩放，平移，旋转
+				controller = new OrbitControls(camera, renderer.domElement);
+				//默认目标
+				controller.target = new THREE.Vector3(0, 0, 0);
+				
+				//添加坐标
+				var axesHelper = new THREE.AxesHelper( 150 );
+				axesHelper.position.x = 0
+				axesHelper.position.y = 0
+				scene.add( axesHelper );
+				
+				//addPlane();
+			
+				stats = new Stats();
+				document.body.appendChild(stats.dom);
+				
+				renderer.render(scene, camera);
+			}
+			
+			function initStats() {
+			
+			    var stats = new Stats();
+			
+			    stats.setMode(0);
+			
+			    stats.domElement.style.position = 'absolute';
+			    stats.domElement.style.left = '0px';
+			    stats.domElement.style.top = '0px';
+			
+			    document.getElementById("Stats-output").appendChild(stats.domElement);
+			
+			    return stats;
+			}
+			
+			function render() {
+			    stats.update();
+
+			    requestAnimationFrame(render);
+			    renderer.render(scene, camera);
+			}
+			
+			function main(){
+				initThree();
+				createBuilding();
+				addCircle();
+				
+				render();
+			}
+			
+			main();
+			
+		</script>
+	</body>
+</html>

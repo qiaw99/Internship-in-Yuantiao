@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<title>Vertices For Geometry</title>
+	<script src="../build/three.js"></script>
+	<script src="./js/libs/stats.js"></script>
+	<script src="./js/utils/SceneUtils.js"></script>
+	<script src="./js/shaders/CopyShader.js"></script>
+	<script src="./js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+
+
+<script type="x-shader/x-vertex" id="vertexshader">
+
+        varying vec2 vUv;
+
+        void main() {
+
+            vUv = uv;
+
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+        }
+
+    </script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+
+        uniform float time;
+        varying vec2 vUv;
+
+
+        void main() {
+
+            vec2 position = vUv;
+
+            float red = abs( sin( position.x  + time / 5.0 ) );
+            float green = abs( sin( position.x + time / 4.0 ) );
+            float blue = abs( sin( position.x + time / 3.0 ) );
+            gl_FragColor = vec4( red, green, blue, 1.0 );
+
+        }
+
+    </script>
+
+<script type="x-shader/x-vertex" id="wavevertexshader">
+
+        varying vec3 vp;
+        void main(){
+           vp = position;
+           gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+
+    </script>
+
+<script type="x-shader/x-fragment" id="wavefragmentshader">
+
+        varying vec3 vp;
+        uniform vec3 u_color;
+        uniform vec3 u_tcolor;
+        uniform vec2 center;//(x,z)
+
+        float getDis(float x, float z){
+            return  sqrt((x-center.x)*(x-center.x)+(z-center.y)*(z-center.y));
+        }
+        void main(){
+            if(vp.y <= 0.0 || vp.y >= 5.0){
+               discard;
+            }
+            else {
+                float uOpacity = 0.6 - vp.y/25.0;
+                float alpha = 0.4 - getDis(vp.x,vp.z)/80.0;
+                gl_FragColor = vec4(u_tcolor, uOpacity*alpha);
+            }
+        }
+
+    </script>
+
+
+<script type="x-shader/x-vertex" id="planevertexshader">
+
+        varying vec3 vp;
+        void main(){
+           vp = position;
+           gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+
+    </script>
+
+<script type="x-shader/x-fragment" id="planefragmentshader">
+
+        varying vec3 vp;
+        uniform vec3 u_color;
+        uniform vec3 u_tcolor;
+        uniform float u_r;
+        uniform float delta;
+        uniform vec2 center;
+
+        float getDis(float x, float z){
+            return  sqrt((x-center.x)*(x-center.x)+(z-center.y)*(z-center.y));
+        }
+        void main(){
+            float uOpacity = 0.3;
+            vec3 vColor = u_color;
+            float uLength = getDis(vp.x,vp.z);
+
+            if(uLength <= u_r && uLength >= u_r - delta){
+                float opacity =  0.3 * (uLength - u_r+delta)/delta;
+                gl_FragColor = vec4(u_tcolor,opacity);
+            } else {
+                discard;
+            }
+
+        }
+
+    </script>
+
+<script id="flylinevertexshader" type="x-shader/x-vertex">
+        uniform float time;
+        uniform float size;
+        varying vec3 iPosition;
+        void main(){
+            iPosition = vec3(position);
+            float pointsize = 1.;
+            if(position.x > time && position.x < (time + size)){
+                pointsize = (position.x - time) / size;
+            }
+            gl_PointSize = pointsize * 3.0;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+        }
+    </script>
+
+<script id="flylinefragmentshader" type="x-shader/x-fragment">
+        uniform float time;
+        uniform float size;
+        uniform vec3 colorf;
+        uniform vec3 colort;
+        varying vec3 iPosition;
+        void main( void ) {
+            float end = time + size;
+            vec4 color;
+            if(iPosition.x > end || iPosition.x < time){
+                discard;
+                //color = vec4(0.213,0.424,0.634,0.3);
+            }else if(iPosition.x > time && iPosition.x < end){
+                float step = fract((iPosition.x - time)/size);
+                float dr = abs(colort.x - colorf.x);
+                float dg = abs(colort.y - colorf.y);
+                float db = abs(colort.z - colorf.z);
+                float r = colort.x > colorf.x?(dr*step+colorf.x):(colorf.x -dr*step);
+                float g = colort.y > colorf.y?(dg*step+colorf.y):(colorf.y -dg*step);
+                float b = colort.z > colorf.z?(db*step+colorf.z):(colorf.z -db*step);
+                color = vec4(r,g,b,1.0);
+            }
+            float d = distance(gl_PointCoord, vec2(0.5, 0.5));
+            if(abs(iPosition.x - end) < 0.2 || abs(iPosition.x - time) < 0.2){
+                if(d > 0.5){
+                    discard;
+                }
+            }
+            gl_FragColor = color;
+        }
+    </script>
+
+<script type="module">
+	import { OrbitControls } from './jsm/controls/OrbitControls.js';
+	import { GUI } from './jsm/libs/dat.gui.module.js';
+	import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
+	import { RenderPass } from './jsm/postprocessing/RenderPass.js';
+
+	import { ShaderPass } from './jsm/postprocessing/ShaderPass.js';
+	import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
+	import { Line2 } from './jsm/lines/Line2.js';
+	import { LineMaterial } from './jsm/lines/LineMaterial.js';
+	import { LineGeometry } from './jsm/lines/LineGeometry.js';
+	import { LineSegments2 } from './jsm/lines/LineSegments2.js';
+	import { GeometryUtils } from './jsm/utils/GeometryUtils.js';
+	import { Ocean } from './jsm/misc/Ocean.js';
+	import { Water } from './jsm/objects/Water2.js';
+	let renderer, camera, scene;
+
+	renderer = new THREE.WebGLRenderer({
+		antialias: true
+	});//定义渲染器
+	renderer.setSize(window.innerWidth, window.innerHeight);//设置渲染的宽度和高度
+	renderer.setClearColor(0x888888, 1.0);//渲染的颜色设置
+	document.body.appendChild(renderer.domElement);//将渲染器加在html中的div里面
+
+
+	// renderer.shadowMapEnabled = true;//开启阴影，默认是关闭的，太影响性能
+	// renderer.shadowMapType = THREE.PCFSoftShadowMap;//阴影的一个类型
+	camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 300000);//perspective是透视摄像机，这种摄像机看上去画面有3D效果
+	camera.position.set(0,0,50);
+	camera.lookAt(0, 0, 0);//摄像机对焦的位置
+	//这三个参数共同作用才能决定画面
+
+	scene = new THREE.Scene();
+
+	var ms_Controls = new OrbitControls( camera, renderer.domElement );
+	ms_Controls.userPan = false;
+	ms_Controls.userPanSpeed = 0.0;
+	ms_Controls.minDistance = 0;
+	ms_Controls.maxDistance = 2000.0;
+	ms_Controls.minPolarAngle = -1.5;
+	ms_Controls.maxPolarAngle = 1.5;
+
+	var geometry = new THREE.CylinderGeometry( 5, 5, 20, 64, 1, true);
+	var material = new THREE.MeshBasicMaterial({color:0x00f0f0,  side: THREE.DoubleSide,});
+
+	var cylinder = new THREE.Mesh( geometry, material );
+	cylinder.position.set(0,0,0);
+	cylinder.rotateZ(Math.PI/2);
+	//scene.add( cylinder );
+
+	// var groundGeometry = new THREE.PlaneBufferGeometry( 20, 20 );
+	// var groundMaterial = new THREE.MeshStandardMaterial( { roughness: 0.8, metalness: 0.4 } );
+	// var ground = new THREE.Mesh( groundGeometry, groundMaterial );
+	// ground.rotation.x = Math.PI * - 0.5;
+	// //scene.add( ground );
+	//
+	// var textureLoader = new THREE.TextureLoader();
+	// textureLoader.load( 'textures/hardwood2_diffuse.jpg', function ( map ) {
+	//
+	// 	map.wrapS = THREE.RepeatWrapping;
+	// 	map.wrapT = THREE.RepeatWrapping;
+	// 	map.anisotropy = 16;
+	// 	map.repeat.set( 4, 4 );
+	// 	groundMaterial.map = map;
+	// 	groundMaterial.needsUpdate = true;
+	//
+	// } );
+	var loader = new THREE.GLTFLoader();
+	var baseComponent = new THREE.Object3D();
+	loader.load('http://localhost:23333/video/111111.gltf', function ( gltf ) {
+		//var coneMesh;
+		//coneMesh = new THREE.Mesh( gltf.scene.children[ 0 ].geometry, gltfmaterial );
+		// //coneMesh.position = this.position;
+		// //coneMesh.scale.setScalar( 100 );
+		// console.log(coneMesh);
+		// gltf.scene.translateY(1000);
+		// scene.add(gltf.scene);
+		//scene.add(coneMesh);
+
+		const root = gltf.scene;
+		//console.log(root);
+		// root.children[0].material = new THREE.MeshBasicMaterial({color:0xff0000});
+		root.children.forEach(element => {
+			if (element.type == "Mesh") {
+				element.material.emissive = element.material.color;
+				element.material.emissiveMap = element.material.map;
+				//element.material.transparent = true;
+				//element.material.opacity = 0.6;
+			}
+		});
+
+		// // });
+		//console.log(root);
+		var res = root.children[0];
+		baseComponent.add(res);
+		scene.add(baseComponent);
+	} );
+	baseComponent.position.set(0,0,0);
+	//baseComponent.scale.set(10,10,10);
+	//baseComponent.rotateZ(Math.PI/2);
+	//baseComponent.rotateZ(-Math.PI/2);
+	// baseComponent.rotateY(Math.PI/2);
+	// water
+
+	var waterGeometry = new THREE.PlaneBufferGeometry( 15, 200 );
+
+	var water = new Water( waterGeometry, {
+		color: 0x999999,
+		scale: 0.1,
+		flowDirection: new THREE.Vector2( 0, 1 ),
+		textureWidth: 1024,
+		textureHeight: 1024,
+		flowSpeed:0.03
+	} );
+	water.position.x = 0;
+	water.position.y = 3;
+	water.position.z = 0;
+	water.rotation.x = Math.PI * - 0.5;
+	water.rotation.z = Math.PI * - 0.5;
+	scene.add( water );
+
+	// light
+
+	// var ambientLight = new THREE.PointLight( 0xcccccc, 5.4 );
+	// ambientLight.position.set(130,-5,50);
+	// scene.add( ambientLight );
+	//
+	// var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
+	// directionalLight.position.set( - 1, 1, 1 );
+	// scene.add( directionalLight );
+
+	// var gsize = 130;
+	// var res = 1024;
+	// var gres = res / 2;
+	// var origx = - gsize / 2;
+	// var origz = - gsize / 2;
+	// var ms_Ocean = new Ocean( renderer, camera, scene,
+	// 		{
+	// 			USE_HALF_FLOAT: false,
+	// 			INITIAL_SIZE: 1200.0,
+	// 			INITIAL_WIND: [ 10.0, 10.0 ],
+	// 			INITIAL_CHOPPINESS: 2.0,
+	// 			CLEAR_COLOR: [ 1.0, 1.0, 1.0, 0.0 ],
+	// 			GEOMETRY_ORIGIN: [ 10000, 10000 ],
+	// 			SUN_DIRECTION: [ - 1.0, 1.0, 1.0 ],
+	// 			OCEAN_COLOR: new THREE.Vector3( 0.604, 0.416, 0.447 ),// 0.104, 0.016, 0.047
+	// 			SKY_COLOR: new THREE.Vector3( 3.2, 9.6, 12.8 ),
+	// 			EXPOSURE: 0.35,
+	// 			GEOMETRY_RESOLUTION: gres,
+	// 			GEOMETRY_SIZE: gsize,
+	// 			RESOLUTION: res
+	// 		} );
+	//
+	// ms_Ocean.materialOcean.uniforms[ "u_projectionMatrix" ] = { value: camera.projectionMatrix };
+	// ms_Ocean.materialOcean.uniforms[ "u_viewMatrix" ] = { value: camera.matrixWorldInverse };
+	// ms_Ocean.materialOcean.uniforms[ "u_cameraPosition" ] = { value: camera.position };
+	//
+	// var baseComponent1 = new THREE.Object3D();
+	// var light1 = new THREE.PointLight(0xffffff, 5, 500);
+	// light1.position.set(0,0,0);
+	// scene.add(light1);
+	// //light1.add( new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({color : 0xFDF5E6})));
+	// //baseComponent1.position.set(200,500,500);
+	// //ms_Ocean.oceanMesh.position.set(350,350,350);
+	// for(var i = 0; i < ms_Ocean.oceanMesh.geometry.vertices.length; ++i){
+	// 	//ms_Ocean.oceanMesh.geometry.vertices[i].x += 150.0
+	// 	ms_Ocean.oceanMesh.geometry.vertices[i].y = 0.0
+	// 	//ms_Ocean.oceanMesh.geometry.vertices[i].z += 150.0
+	// }
+	//
+	// //ms_Ocean.oceanMesh.geometry.vertices[3].y = 300.0;
+	// baseComponent1.add(ms_Ocean.oceanMesh );
+	// //scene.add(baseComponent1);
+	//
+	//
+	//
+	// var gui = new GUI();
+	// gui.add( ms_Ocean, "size", 100, 5000 ).onChange( function ( v ) {
+	//
+	// 	this.object.size = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "choppiness", 0.1, 4 ).onChange( function ( v ) {
+	//
+	// 	this.object.choppiness = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "windX", - 15, 15 ).onChange( function ( v ) {
+	//
+	// 	this.object.windX = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "windY", - 15, 15 ).onChange( function ( v ) {
+	//
+	// 	this.object.windY = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "sunDirectionX", - 1.0, 1.0 ).onChange( function ( v ) {
+	//
+	// 	this.object.sunDirectionX = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "sunDirectionY", - 1.0, 1.0 ).onChange( function ( v ) {
+	//
+	// 	this.object.sunDirectionY = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "sunDirectionZ", - 1.0, 1.0 ).onChange( function ( v ) {
+	//
+	// 	this.object.sunDirectionZ = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	//
+	// gui.add( ms_Ocean, "exposure", 0.0, 0.5 ).onChange( function ( v ) {
+	//
+	// 	this.object.exposure = v;
+	// 	this.object.changed = true;
+	//
+	// } );
+	// var lastTime = ( new Date() ).getTime();
+
+	function animate() {
+
+		requestAnimationFrame( animate );
+		// var currentTime = new Date().getTime();
+		// ms_Ocean.deltaTime = ( currentTime - lastTime ) / 1000 || 0.0;
+		// lastTime = currentTime;
+		// ms_Ocean.render( ms_Ocean.deltaTime );
+		// ms_Ocean.overrideMaterial = ms_Ocean.materialOcean;
+		//
+		// if ( ms_Ocean.changed ) {
+		//
+		// 	ms_Ocean.materialOcean.uniforms[ "u_size" ].value = ms_Ocean.size;
+		// 	ms_Ocean.materialOcean.uniforms[ "u_sunDirection" ].value.set( ms_Ocean.sunDirectionX, ms_Ocean.sunDirectionY, ms_Ocean.sunDirectionZ );
+		// 	ms_Ocean.materialOcean.uniforms[ "u_exposure" ].value = ms_Ocean.exposure;
+		// 	ms_Ocean.changed = false;
+		//
+		// }
+		//
+		// ms_Ocean.materialOcean.uniforms[ "u_normalMap" ].value = ms_Ocean.normalMapFramebuffer.texture;
+		// ms_Ocean.materialOcean.uniforms[ "u_displacementMap" ].value = ms_Ocean.displacementMapFramebuffer.texture;
+		// ms_Ocean.materialOcean.uniforms[ "u_projectionMatrix" ].value = camera.projectionMatrix;
+		// ms_Ocean.materialOcean.uniforms[ "u_viewMatrix" ].value = camera.matrixWorldInverse;
+		// ms_Ocean.materialOcean.uniforms[ "u_cameraPosition" ].value = camera.position;
+		// ms_Ocean.materialOcean.depthTest = true;
+		renderer.render(scene, camera);
+	};
+
+	animate();
+
+</script>
+</body>
+</html>
