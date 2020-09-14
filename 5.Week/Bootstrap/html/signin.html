@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link href="../css/bootstrap.css" rel="stylesheet">
+		<script src="../js/jquery-3.5.1.js"></script>
+		<script src="../js/bootstrap.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<!-- 网站头部 -->
+			<div class="row">
+				<div class="col-md-3" style="margin-top: 10px;">
+					<img src="../img/logo.png" />
+				</div>
+				<div class="col-md-5">
+					<img src="../img/garantee.png" style="margin-top: 20px;" />
+				</div>
+				<div class="col-md-4">
+					<ul class="list-inline" style="margin-top: 30px;">
+						<li><a href="" class="btn btn-primary">登录</a></li>
+						<li><a href="" class="btn btn-primary">注册</a></li>
+						<li><a href="" class="btn btn-danger">购物车</a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- 导航条 -->
+			<nav class="navbar navbar-inverse" style="margin-top: 10px;">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+						 aria-expanded="false">
+							<!-- 阅读器样式 -->
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="#">首页</a>
+					</div>
+
+					<!-- 导航主题部分 -->
+					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav">
+							<li class="active"><a href="#">手机数码<span class="sr-only">(current)</span></a></li>
+							<li><a href="#">电脑办公</a></li>
+							<li><a href="#">零食饮料</a></li>
+							<li><a href="#">文具用品</a></li>
+							<li><a href="#">蔬菜生鲜</a></li>
+							<!-- 下拉菜单 -->
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">更多
+									<span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li><a href="#">母婴用品</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a href="#">汽车配件</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a href="#">家具</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a href="#">宠物</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a href="#">其他</a></li>
+								</ul>
+							</li>
+						</ul>
+
+						<!-- 搜索框 -->
+						<form class="navbar-form navbar-right">
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Search">
+							</div>
+							<button type="submit" class="btn btn-default">搜索</button>
+						</form>
+					</div>
+				</div>
+			</nav>
+			<!-- 注册页面 -->
+			<div class="row" style="background-image: url(../img/2.jpg);">
+				<div class="col-sm-8 col-sm-offset-2" style="border: 5px solid #28A4C9; background-color: #FFFFFF;">
+					<div class="row">
+						<div class="col-sm-8 col-sm-offset-2" style="margin-top: 20px;">
+							<font color="#66AFE9" size="4">会员注册</font>
+						</div>
+					</div>
+					
+					<form class="form-horizontal" style="margin-top: 20px;" onsubmit="return checkForm()">
+						<div class="form-group" id="userNameDIV">
+							<label class="col-sm-2 control-label">用户名</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="userName" name="userName" placeholder="请输入用户名">
+							</div>
+							<label class="col-sm-4 control-label" id="userNameMSG"></label>
+						</div>
+	
+						<div class="form-group" id="passwordDIV">
+							<label class="col-sm-2 control-label">密码</label>
+							<div class="col-sm-6">
+								<input type="password" class="form-control"  id="password" name="password" placeholder="请输入密码">
+							</div>
+							<label class="col-sm-4 control-label" id="passwordMSG"></label>
+						</div>
+						
+						<div class="form-group" id="repasswordDIV">
+							<label class="col-sm-2 control-label">确认密码</label>
+							<div class="col-sm-6">
+								<input type="password" class="form-control" id="repassword" placeholder="请确认密码">
+							</div>
+							<label class="col-sm-4 control-label" id="repasswordMSG"></label>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="email" name="email" placeholder="请输入邮箱">
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">姓名</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="name" name="name" placeholder="请输入姓名">
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top: 10px;">
+							<label class="col-sm-2 control-label">姓名</label>
+							<div class="col-sm-6" style="margin-top: 5px;">
+								<input type="radio" name="sex" value="man" checked="checked">男
+								<input type="radio" name="sex" value="woman" style="margin-left: 10px;">女 
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-danger" value="注册" id="btn"> 注 册 </button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			
+			<!-- 网站底部 -->
+			<div class="row" style="margin-top: 20px;">
+				<div class="col-sm-8">
+					<img src="../img/info.png" style="width: 1100px;" />
+				</div>
+			</div>
+			
+			<div class="row" style="margin-top: 20px;">
+				<div class="col-xs-10 text-center">
+					<ul class="list-inline">
+						<li><a href="">关于我们</a></li>
+						<li><a href="">联系我们</a></li>
+						<li><a href="recuring.html">招贤纳士</a></li>
+						<li><a href="">法律声明</a></li>
+						<li><a href="">友情链接</a></li>
+						<li><a href="">支付方式</a></li>
+						<li><a href="">配送方式</a></li>
+						<li><a href="">服务声明</a></li>
+						<li><a href="">广告声明</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function check2pwd(f1, f2){
+				if(f1 && f2){
+					var pwd = document.getElementById("password").value;
+					var rpwd = document.getElementById("repassword").value;
+					return pwd === rpwd;
+				} else {
+					return false
+				}
+			}
+			
+			function checkNotNull(elemID){
+				var msg = document.getElementById(elemID + "MSG");
+				var name = document.getElementById(elemID).value;
+				var div = document.getElementById(elemID + "DIV");
+				
+				var reg = /^\s*$/;
+				/* 只含有空格 */
+				if(reg.test(name)){
+					div.className += ' has-error';
+					msg.innerHTML = "不能为空!";
+					return false;
+				} else {
+					div.className = "form-group";
+					msg.innerHTML = "";
+				}
+			}
+			
+			function checkForm(){
+				var flag = checkNotNull("userName");
+				var flag1 = checkNotNull("password");
+				var flag2 = checkNotNull("repassword");
+				var flag4 = check2pwd(f1, f2);
+
+				return flag && flag4;
+			}
+		</script>
+	</body>
+</html>
