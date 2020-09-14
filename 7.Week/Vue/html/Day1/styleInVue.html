@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../../js/vue.js" ></script>
+		<style>
+			.red{
+				color: red;
+			}
+			
+			.thin{
+				font-size: 200;
+			}
+			.italic{
+				font-style : italic;
+			}
+			.active{
+				letter-spacing: 0.5em;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<!-- 1. 直接传递一个数组， class需要用v-bind进行绑定 同时可以使用三元表达式进行判断 -->
+			<h1 :class="['italic', 'red', flag?'active':'']">我要非得更改更阿苏过得还u闪光灯i</h1>
+			
+			<!-- 2. 在数组中使用对象代替三元数组  -->
+			<h1 :class="['italic', 'red', {'active': flag}]">我要非得更改更阿苏过得还u闪光灯i</h1>
+		
+			<!-- 3. 直接传递对象 -->
+			<h1 :class="classObj">我要非得更改更阿苏过得还u闪光灯i</h1>
+			
+			<h4 :style="[styleObj1, styleObj2]">i阿苏个覅个大概过了粗</h4>
+		</div>
+		
+		<script> 
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					flag: true,
+					classObj: {red: true, thin: true, italic: true},
+					styleObj1: {color: 'red', 'font-weight': 200},
+					styleObj2: {'font-style': 'italic'}
+				}
+			});
+		</script>
+	</body>
+</html>

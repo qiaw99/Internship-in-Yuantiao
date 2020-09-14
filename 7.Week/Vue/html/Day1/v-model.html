@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="../../js/vue.js" ></script>
+	</head>
+	<body>
+		<div id="app">
+			<h4>{{msg}}</h4>
+			<!-- v-model能实现双向绑定， Model和View层， 只能对表单元素使用 -->
+			<input type="text" v-model="msg" style="width: 100px;"/>
+		</div>
+		
+		<script> 
+			var vm = new Vue({
+				el: '#app', 
+				data: {
+					msg: "test"
+				}
+			});
+		</script>
+	</body>
+</html>

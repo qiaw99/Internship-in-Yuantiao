@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="../../js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="../../css/bootstrap.css" />
+	</head>
+	<body>
+		<div id="app">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">添加品牌</h3>
+				</div>
+				<div class="panel-body form-inline">
+					<label>
+						Id: 
+						<input type="text" class="form-control" v-model="id"/>
+					</label>
+					
+					<label style="margin-left: 10px">
+						Name:
+						<!-- 案件修饰符: .enter, .tab, .delete, .esc, .space, .up, .down, .left, .right -->
+						<input type="text" class="form-control" v-model="name" @keyup.f2="add"/>
+					</label>
+					
+					<label style="margin-left: 10px">
+						搜索名称关键字：
+						<!-- 使用自定义指令 -->
+						<input type="text" class="form-control" v-model="keywords" id="search" v-focus v-color="'blue'"/>
+					</label>
+					
+					<input type="button" value="添加" class="btn-primary" style="margin-left: 10px;" @click="add()"/>
+				</div>
+			</div>
+			
+			<table class="table table-bordered table-hover table table-striped">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Ctime</th>
+						<th>Operation</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="item in search(keywords)" :key="item.id">
+						<td>{{item.id}}</td>
+						<td  v-text="item.name"></td>
+						<td>{{item.ctime|dateFormat('yyyy-mm-dd-mm')}}</td>
+						<td>
+							<a href="#" @click.prevent="del(item.id)">刪除</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<script>
+			/* 创建过滤器，第一个参数是过滤器的名称，第二个参数是调用的函数。
+				函数的第一个参数是过滤器管道符前面传递来的数据{name | 过滤器名称}
+				此处为全局过滤器
+			*/
+			Vue.filter('dateFormat', function(dataStr, pattern){
+				var dt = new Date(dataStr);
+				var y = dt.getFullYear();
+				var m = dt.getMonth() + 1;
+				var d = dt.getDate();
+				
+				if(pattern.toLowerCase() === 'yyyy-mm-dd') {
+					return `${y}-${m}-${d}`;
+				} else {
+					var hh = dt.getHours();
+					var mm = dt.getMinutes();
+					var ss = dt.getSeconds();
+					return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+				}
+			});
+			
+			/* 自定义全局按键修饰符 */
+			Vue.config.keyCodes.f2 = 113;
+			
+			/* 
+				参数1： 指令名称，在指令名称前面不需要加v-前缀 
+				参数2： 一个对象，这个对象身上有一些指令相关的函数，这些函数可以在特定的阶段执行相关的操作
+			*/
+			Vue.directive("focus", {
+				/* 在每个函数中，第一个参数永远是el，表示被绑定了指令的那个元素。这个el元素是原生的js对象 */
+				/* 每当指令绑定到元素上的时候，会立即执行bind函数，只执行一次 */
+				bind: function(el){
+					/* 在元素刚绑定指令的时候，还没有插入到DOM中，一个元素只有插入DOM之后才能获取焦点 */
+					el.focus();
+				},
+				/* 元素插入到DOM中的时候，会执行inserted元素， 只执行一次 */
+				inserted: function(el){
+					el.focus();
+				},
+				/* 当VNode更新的时候，执行update， 可能会触发多次 */
+				updated: function(el){
+					
+				}
+			});
+			
+			Vue.directive('color',{
+				bind: function(el, binding){
+					el.style.color = binding.value;
+				}
+			})
+			
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					id: '',
+					name: '',
+					keywords: '',
+					list: [{
+							id: 1,
+							name: '奔驰',
+							ctime: new Date()
+						},
+						{
+							id: 2,
+							name: '宝马',
+							ctime: new Date()
+						}
+					]
+				},
+				methods: {
+					add(){
+						this.list.push({
+							id: this.id, 
+							name: this.name, 
+							ctime: new Date()
+						});
+						this.id = this.name = '';
+					}, 
+					del(id){
+						this.list.some((item, i) => {
+							if(item.id == id){
+								this.list.splice(i, 1);
+								return true;
+							}
+						})
+					},
+					search(keywords){
+						var newList = [];
+						this.list.forEach(item => {
+							if(item.name.indexOf(keywords) != -1){
+								newList.push(item);
+							}
+						});
+						return newList; 
+					}
+				}, 
+				/* 局部(私有过滤器)， 优先调用私有过滤器 */
+				filters: {
+					dateFormat: function(dataStr, pattern = ''){
+						var dt = new Date(dataStr);
+						var y = dt.getFullYear();
+						var m = dt.getMonth() + 1;
+						var d = dt.getDate();
+						
+						if(pattern.toLowerCase() === 'yyyy-mm-dd') {
+							return `${y}-${m}-${d}`;
+						} else {
+							var hh = dt.getHours();
+							var mm = dt.getMinutes();
+							var ss = dt.getSeconds();
+							return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

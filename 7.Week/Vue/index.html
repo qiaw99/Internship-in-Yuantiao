@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="../../js/vue.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+		</div>
+		
+		<script> 
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					msg: 'ok'
+				}, 
+				methods: {
+					show(){
+						alert("show is executed");
+					}
+				}, 
+				/* 生命周期函数，表示实例完全被创建之前会被执行 */
+				beforeCreate(){
+					/* 在beforeCreate生命周期函数被执行的时候，data和methods中的数据都还没被初始化 */
+					console.log(this.msg);
+					this.show();
+				},
+				/* 如果要调用methods中的方法或者操作data中的数据，最早只能在created里操作 */
+				created(){
+					console.log(this.msg);
+					this.show();
+				},
+				/* 模板已经在内存中编辑完成了，但是还没有把模板渲染到页面中，页面中的元素还没被替换 */
+				beforeMount(){
+							
+				},
+				/* 内存中编辑好的模板被加载到页面中  */
+				created(){
+					
+				},
+				/* 运行中的两个事件 */
+				/* 数据被更新了但页面上还没有更新 */
+				beforeUpdate(){
+					
+				}, 
+				/* 执行的时候页面和data数据都已经同步 */
+				updated(){
+					
+				},
+				/* 进入销毁阶段，实例的所有data，methods以及过滤器都处于可用状态，没有真正执行销毁过程 */
+				beforeDestroy(){
+					
+				},
+				/* 组件完全被销毁 */
+				destroyed(){
+					
+				}
+			});
+		</script>
+	</body>
+</html>

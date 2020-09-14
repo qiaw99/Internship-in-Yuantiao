@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../../js/vue.js"></script>
+		<style type="text/css">
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<!-- v-cloak解决插值表达式闪烁问题 -->
+			<p v-cloak>+++{{msg}}---</p>
+			<div>{{msg2}}</div>
+			
+			<!-- v-text默认没有闪烁问题，但会覆盖元素中原本的内容 -->
+			<h4 v-text="msg">+++---</h4>
+			<div v-text="msg2"></div>
+			
+			<!-- 会解析字符串 -->
+			<div v-html="msg2"></div>
+			
+			<!-- v-bind 用于绑定属性的指令简写为":" , v-on绑定事件简写为"@" -->
+			<input type="button" value="button" v-bind:title="mytitle+ '123'" v-on:click="show()"/>
+		</div>
+		
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: '#app',
+				data: {
+					msg: 123,
+					msg2: "<h1>testing...</h1>",
+					mytitle: "my own title"
+				},
+				methods:{
+					show: function(){
+						alert("hello!");
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

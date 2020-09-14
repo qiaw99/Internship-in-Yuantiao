@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="../../js/vue.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<!-- 插值表达式 -->
+			<p>{{msg}}</p>
+		</div>
+		
+		<script>
+			var vm = new Vue({
+				// 表示该实例要控制页面上的哪个元素
+				el: '#app',
+				// 存放el中要使用的数据
+				data: {
+					msg: "vue!"
+				}
+			});
+		</script>
+	</body>
+</html>
