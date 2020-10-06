@@ -34,8 +34,6 @@ Code while having internship in Yuantiao.
 
   - Vue.js
 
-  - React
-
   - Bootstrap
 
   - ajax
@@ -44,7 +42,6 @@ Code while having internship in Yuantiao.
 
   - OpenGL/WebGL
 
-  - Nodejs
   
     
 
